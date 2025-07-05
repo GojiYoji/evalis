@@ -1,13 +1,19 @@
 # region: vars and stuff ------------------------------------------------------
 include ../Makefile.common
 
+ifdef CI
+pip_install_target := pip_install_ci
+else
+pip_install_target := pip_install
+endif
+
 requirements_file=requirements.lock.txt
 python_gen_dir=src/fablex/__gen__/
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean lint setup teardown test \
 	lint_pyright \
-	pip_clean pip_install pip_lock \
+	pip_clean pip_install pip_install_ci pip_lock \
 
 build: $(python_gen_dir)
 
@@ -16,7 +22,7 @@ clean:
 
 lint: lint_pyright lint_black lint_flake8
 
-setup: pip_install
+setup: $(pip_install_target)
 
 teardown: pip_clean
 
@@ -45,16 +51,20 @@ pip_clean:
 	rm -rf ../.venv
 	mise install
 
+pip_install_ci:
+	python -m pip install --upgrade pip
+	pip install --no-deps -e .
+	pip install --require-hashes -r requirements.lock.txt
+	pip check
+
 pip_install:
-	pip install -r requirements.lock.txt
-	# note: We need to run this from top directory so that we are next to `.venv`
+	pip install --require-hashes -r requirements.lock.txt
 	pip install -e .[dev]
 	pip check
 
 pip_lock:
-	# note: We need to run this from top directory so that we are next to `.venv`
-	pip install -e .[dev]
-	pip freeze --exclude-editable > requirements.lock.txt
+	pip install pip-tools
+	pip-compile --generate-hashes --extra dev -o requirements.lock.txt pyproject.toml
 
 # region: real stuff ----------------------------------------------------------
 $(python_gen_dir): $(GRAMMAR_FILE) $(requirements_file)

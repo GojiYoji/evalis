@@ -1,0 +1,38 @@
+name: CI Check
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+permissions:
+  contents: read
+jobs:
+  check_general:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Makefile.gen
+        run: ./support/check_makefile_gen.sh
+
+  lint_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: ./.github/actions/python-setup
+
+      - name: Lint
+        run: make lint_python
+
+  test_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: ./.github/actions/python-setup
+
+      - name: Test with pytest
+        run: make pytest
