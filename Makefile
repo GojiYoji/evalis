@@ -1,14 +1,14 @@
 # region: vars and stuff ------------------------------------------------------
-grammar_file=grammar/Psyval.g4
+grammar_file=grammar/Fablex.g4
 requirements_file=python/requirements.lock.txt
 
-python_gen_dir=python/src/psyval/__gen__/
+python_gen_dir=python/src/fablex/__gen__/
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: \
 	build build_python \
 	clean clean_python_gen \
-	pip_clean pip_install pip_lock
+	pip_clean pip_install pip_install_ci pip_lock
 
 build: build_python
 
@@ -18,6 +18,11 @@ clean: clean_python_gen
 
 clean_python_gen:
 	@rm -rf $(python_gen_dir)
+
+pip_clean:
+	mise uninstall python
+	rm -rf .venv
+	mise install
 
 pip_install_ci:
 	python -m pip install --upgrade pip

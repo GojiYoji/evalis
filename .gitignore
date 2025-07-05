@@ -4,4 +4,4 @@
 __pycache__/
 
 # Generated stuff -------------------------------------------------------------
-python/src/psyval/__gen__/
+python/src/fablex/__gen__/

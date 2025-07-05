@@ -1,5 +1,12 @@
 from typing import Any
-from psyval.ast import BinOpType, Literal, BinOp, Reference, UnaryOp, UnaryOpType
+from fablex.ast import (
+    BinaryOpType,
+    LiteralNode,
+    BinaryOpNode,
+    ReferenceNode,
+    UnaryOpNode,
+    UnaryOpType,
+)
 
 
 def get_val_from_context(context: Any, key: Any) -> Any:
@@ -11,47 +18,47 @@ def get_val_from_context(context: Any, key: Any) -> Any:
         raise ValueError(f"Unexpected context type in get_val_from_context: {context}")
 
 
-class PsyvalEval:
+class FablexEval:
     _should_null_on_bad_access: bool
 
     def __init__(self, should_null_on_bad_access: bool = False):
         self._should_null_on_bad_access = should_null_on_bad_access
 
     def evaluate(self, node: Any, context: Any) -> Any:
-        if isinstance(node, Literal):
+        if isinstance(node, LiteralNode):
             return node.value
-        if isinstance(node, BinOp):
+        if isinstance(node, BinaryOpNode):
             left = self.evaluate(node.left, context)
             right = self.evaluate(node.right, context)
 
             match (node.op):
-                case BinOpType.ADD:
+                case BinaryOpType.ADD:
                     return left + right
-                case BinOpType.AND:
+                case BinaryOpType.AND:
                     return left and right
-                case BinOpType.DIVIDE:
+                case BinaryOpType.DIVIDE:
                     return left / right
-                case BinOpType.NOT_EQUALS:
+                case BinaryOpType.NOT_EQUALS:
                     return left != right
-                case BinOpType.EQUALS:
+                case BinaryOpType.EQUALS:
                     return left == right
-                case BinOpType.GT:
+                case BinaryOpType.GT:
                     return left > right
-                case BinOpType.GTE:
+                case BinaryOpType.GTE:
                     return left >= right
-                case BinOpType.LT:
+                case BinaryOpType.LT:
                     return left < right
-                case BinOpType.LTE:
+                case BinaryOpType.LTE:
                     return left <= right
-                case BinOpType.MULTIPLY:
+                case BinaryOpType.MULTIPLY:
                     return left * right
-                case BinOpType.OR:
+                case BinaryOpType.OR:
                     return left or right
-                case BinOpType.SUBTRACT:
+                case BinaryOpType.SUBTRACT:
                     return left - right
                 case _:
                     raise ValueError(f"Unexpected binary op found: {node.op}")
-        if isinstance(node, UnaryOp):
+        if isinstance(node, UnaryOpNode):
             val = self.evaluate(node.expr, context)
 
             match (node.op):
@@ -60,7 +67,7 @@ class PsyvalEval:
                 case _:
                     raise ValueError(f"Unexpected unary op found: {node.op}")
 
-        if isinstance(node, Reference):
+        if isinstance(node, ReferenceNode):
             current = self._lookup_reference(context, node.root)
             for child in node.children:
                 child_key = self.evaluate(child, context)

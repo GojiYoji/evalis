@@ -1,8 +1,8 @@
 from antlr4 import CommonTokenStream, InputStream
-from psyval.__gen__.grammar.PsyvalParser import PsyvalParser
-from psyval.__gen__.grammar.PsyvalLexer import PsyvalLexer
-from psyval.ast import PsyvalAstBuilder
-from psyval.eval import PsyvalEval
+from fablex.__gen__.grammar.FablexParser import FablexParser
+from fablex.__gen__.grammar.FablexLexer import FablexLexer
+from fablex.ast import FablexAstBuilder
+from fablex.eval import FablexEval
 
 
 def main(argv):
@@ -11,13 +11,13 @@ def main(argv):
     print(f"Evaluating this expression: {argv[1]}")
 
     # 3. Create lexer
-    lexer = PsyvalLexer(input_stream)
+    lexer = FablexLexer(input_stream)
 
     # 4. Create token stream
     stream = CommonTokenStream(lexer)
 
     # 5. Create parser
-    parser = PsyvalParser(stream)
+    parser = FablexParser(stream)
 
     # 6. Parse using `parse`
     tree = parser.parse()
@@ -26,10 +26,10 @@ def main(argv):
         print("syntax errors!!!!")
         exit(1)
 
-    builder = PsyvalAstBuilder()
+    builder = FablexAstBuilder()
     ast = builder.visit(tree)
 
-    evaluator = PsyvalEval()
+    evaluator = FablexEval()
     result = evaluator.evaluate(
         ast,
         {

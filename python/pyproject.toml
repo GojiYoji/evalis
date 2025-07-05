@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "psyval"
+name = "fablex"
 dynamic = ["version"]
 description = "A polyglot safe evaluator of expressions from userland"
 readme = "README.md"
@@ -26,7 +26,7 @@ dev = [
 include = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "psyval.__version__" }
+version = { attr = "fablex.__version__" }
 
 [tool.flake8]
 ignore = ["E501"]

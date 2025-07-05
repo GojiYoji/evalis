@@ -1,4 +1,4 @@
-grammar Psyval;
+grammar Fablex;
 
 parse
     : expr EOF
