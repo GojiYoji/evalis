@@ -1,0 +1,3 @@
+# region: vars and stuff ------------------------------------------------------
+ROOT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+GRAMMAR_FILE := $(ROOT_DIR)/grammar/Fablex.g4

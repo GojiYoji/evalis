@@ -1,0 +1,5 @@
+[flake8]
+exclude =
+  */__gen__
+ignore =
+  E501

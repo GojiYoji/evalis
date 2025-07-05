@@ -1,47 +1,42 @@
 # region: vars and stuff ------------------------------------------------------
-grammar_file=grammar/Fablex.g4
-requirements_file=python/requirements.lock.txt
-
-python_gen_dir=python/src/fablex/__gen__/
+include ./Makefile.common
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: \
 	build build_python \
-	clean clean_python_gen \
-	pip_clean pip_install pip_install_ci pip_lock
+	clean clean_python \
+	lint lint_python \
+	setup setup_python \
+	teardown teardown_python \
+	test test_python
 
 build: build_python
 
-build_python: $(python_gen_dir)
+build_python:
+	$(MAKE) -C python lint
 
-clean: clean_python_gen
+clean: clean_python
 
-clean_python_gen:
-	@rm -rf $(python_gen_dir)
+clean_python:
+	$(MAKE) -C python clean
 
-pip_clean:
-	mise uninstall python
-	rm -rf .venv
-	mise install
+lint: lint_python
 
-pip_install_ci:
-	python -m pip install --upgrade pip
-	cd python && pip install --no-deps -e .
-	cd python && pip install -r requirements.lock.txt
-	cd python && pip check
+lint_python:
+	$(MAKE) -C python lint
 
-pip_install:
-	cd python && pip install -r requirements.lock.txt
-	cd python && pip install -e .[dev]
-	cd python && pip check
+setup: setup_python
 
-pip_lock:
-	cd python && pip install -e .[dev]
-	cd python && pip freeze --exclude-editable > requirements.lock.txt
+setup_python:
+	$(MAKE) -C python setup
 
-# region: real stuff ----------------------------------------------------------
-$(python_gen_dir): $(grammar_file) $(requirements_file)
-	@rm -rf $(python_gen_dir)
-	@mkdir -p $(python_gen_dir)
-	antlr4 -Dlanguage=Python3 -visitor $(grammar_file) -o $(python_gen_dir)
-	@touch $(python_gen_dir)
+teardown: teardown_python
+
+teardown_python:
+	$(MAKE) -C python teardown
+
+test: test_python
+
+test_python:
+	$(MAKE) -C python test
+

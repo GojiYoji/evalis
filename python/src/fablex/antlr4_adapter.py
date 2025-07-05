@@ -1,8 +1,8 @@
 from antlr4 import CommonTokenStream, InputStream
 from antlr4.error.ErrorListener import ErrorListener
 
-from fablex.__gen__.grammar.FablexParser import FablexParser
-from fablex.__gen__.grammar.FablexLexer import FablexLexer
+from fablex.__gen__.FablexParser import FablexParser
+from fablex.__gen__.FablexLexer import FablexLexer
 
 from fablex.error import syntax_error
 from fablex.types import FablexSyntaxMessage
@@ -17,7 +17,8 @@ class SyntaxErrorCollector(ErrorListener):
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         # TODO: What other info can we collect from here?
-        self.errors.append(FablexSyntaxMessage(line=line, column=column, message=msg))
+        error = FablexSyntaxMessage(line=line, column=column, message=msg)
+        self.errors.append(error)
 
 
 def parse_expression_tree(expression: str) -> FablexParser.ParseContext:

@@ -1,6 +1,6 @@
 from enum import Enum
-from fablex.__gen__.grammar.FablexVisitor import FablexVisitor as BaseFablexVisitor
-from fablex.__gen__.grammar.FablexParser import FablexParser
+from fablex.__gen__.FablexVisitor import FablexVisitor as BaseFablexVisitor
+from fablex.__gen__.FablexParser import FablexParser
 from dataclasses import dataclass
 from typing import Any
 

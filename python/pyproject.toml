@@ -30,6 +30,3 @@ include = ["src"]
 [tool.setuptools.dynamic]
 version = { attr = "fablex.__version__" }
 
-[tool.flake8]
-ignore = ["E501"]
-
