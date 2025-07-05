@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fablex"
 dynamic = ["version"]
-description = "A polyglot safe evaluator of expressions from userland"
+description = "A polyglot, safe, user-friendly expression evaluator."
 readme = "README.md"
 authors = [
   { name = "Paul Slaughter", email = "paul@souldzin.com" }
@@ -19,7 +19,9 @@ dev = [
   "antlr4-tools==0.2.2",
   "black==25.1.0",
   "flake8==7.2.0",
-  "pyright==1.1.400"
+  "pyright==1.1.400",
+  "pytest==8.4.1",
+  "pyyaml==6.0.2"
 ]
 
 [tool.pyright]

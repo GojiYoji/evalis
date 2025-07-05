@@ -7,6 +7,7 @@ from fablex.ast import (
     UnaryOpNode,
     UnaryOpType,
 )
+from fablex.types import FablexEvalOptions
 
 
 def get_val_from_context(context: Any, key: Any) -> Any:
@@ -19,10 +20,10 @@ def get_val_from_context(context: Any, key: Any) -> Any:
 
 
 class FablexEval:
-    _should_null_on_bad_access: bool
+    _options: FablexEvalOptions
 
-    def __init__(self, should_null_on_bad_access: bool = False):
-        self._should_null_on_bad_access = should_null_on_bad_access
+    def __init__(self, options: FablexEvalOptions = FablexEvalOptions()):
+        self._options = options
 
     def evaluate(self, node: Any, context: Any) -> Any:
         if isinstance(node, LiteralNode):
@@ -81,7 +82,7 @@ class FablexEval:
         try:
             return get_val_from_context(context, key)
         except Exception:
-            if self._should_null_on_bad_access:
+            if self._options.should_null_on_bad_access:
                 return None
             else:
                 raise
