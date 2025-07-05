@@ -1,3 +1,10 @@
+// IMPORTANT! These comments are special and help generate code. If the grammar
+// changes, please also change these lines as needed.
+// RESERVED_WORDS: not, and, or, null, true, false
+// BINARY_OPS: MULTIPLY *, DIVIDE /, ADD +, SUBTRACT -, LT <, LTE <=, GT >, GTE >=, EQUALS ==, NOT_EQUALS !=, AND and, OR or
+// UNARY_OPS: NOT not
+// STOP
+// ----------------------------------------------------------------------------
 grammar Fablex;
 
 parse

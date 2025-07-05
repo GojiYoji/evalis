@@ -8,14 +8,14 @@ pip_install_target := pip_install
 endif
 
 requirements_file=requirements.lock.txt
-python_gen_dir=src/fablex/__gen__/
+python_gen_dir=src/fablex/__gen__
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean lint setup teardown test \
 	lint_pyright \
 	pip_clean pip_install pip_install_ci pip_lock \
 
-build: $(python_gen_dir)
+build: $(python_gen_dir)/.antlr4.touch $(python_gen_dir)/grammar.py
 
 clean:
 	@rm -rf $(python_gen_dir)
@@ -67,8 +67,11 @@ pip_lock:
 	pip-compile --generate-hashes --extra dev -o requirements.lock.txt pyproject.toml
 
 # region: real stuff ----------------------------------------------------------
-$(python_gen_dir): $(GRAMMAR_FILE) $(requirements_file)
+$(python_gen_dir)/grammar.py: $(GRAMMAR_FILE) generate.py
+	python ../support/generate_source.py generate.py $(python_gen_dir)/grammar.py
+
+$(python_gen_dir)/.antlr4.touch: $(GRAMMAR_FILE) $(requirements_file)
 	@rm -rf $(python_gen_dir)
 	@mkdir -p $(python_gen_dir)
 	antlr4 -Dlanguage=Python3 -visitor $(GRAMMAR_FILE) -o $(python_gen_dir)
-	@touch $(python_gen_dir)
+	@touch $(python_gen_dir)/.antlr4.touch

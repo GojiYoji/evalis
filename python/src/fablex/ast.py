@@ -1,59 +1,14 @@
-from enum import Enum
 from fablex.__gen__.FablexVisitor import FablexVisitor as BaseFablexVisitor
 from fablex.__gen__.FablexParser import FablexParser
-from dataclasses import dataclass
-from typing import Any
-
-# region: enum stuff ----------------------------------------------------------
-
-
-class BinaryOpType(Enum):
-    ADD = "+"
-    AND = "and"
-    DIVIDE = "/"
-    EQUALS = "=="
-    NOT_EQUALS = "!="
-    GT = ">"
-    GTE = ">="
-    LT = "<"
-    LTE = "<="
-    MULTIPLY = "*"
-    OR = "or"
-    SUBTRACT = "-"
-
-
-class UnaryOpType(Enum):
-    NOT = "not"
-
-
-# region: nodes and stuff -----------------------------------------------------
-
-
-@dataclass(frozen=True)
-class ReferenceNode:
-    root: str
-    children: "tuple[FablexNode, ...]"
-
-
-@dataclass(frozen=True)
-class UnaryOpNode:
-    op: UnaryOpType
-    expr: Any
-
-
-@dataclass(frozen=True)
-class BinaryOpNode:
-    op: BinaryOpType
-    left: Any
-    right: Any
-
-
-@dataclass(frozen=True)
-class LiteralNode:
-    value: Any
-
-
-FablexNode = ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode
+from .types import (
+    BinaryOpNode,
+    BinaryOpType,
+    UnaryOpNode,
+    UnaryOpType,
+    LiteralNode,
+    ReferenceNode,
+    FablexNode,
+)
 
 
 def _get_op_text(ctx):
