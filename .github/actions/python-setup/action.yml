@@ -1,0 +1,51 @@
+name: "Setup Python"
+description: "Common setup for python project"
+runs:
+  using: "composite"
+  steps:
+    - name: Cache pip (Linux)
+      if: runner.os == 'Linux'
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache pip (macOs)
+      if: runner.os == 'macOs'
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/Library/Caches/pip/
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache pip (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/cache@v4.2.3
+      with:
+        path: ${{ env.LOCALAPPDATA }}\pip\Cache'
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Set up Python 3.13.1
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.13.1"
+
+    - name: Setup make (Windows only)
+      if: runner.os == 'Windows'
+      run: choco install make
+      shell: powershell
+
+    - name: Install dependencies (bash)
+      if: runner.os != 'Windows'
+      run: make setup_python build_python
+      shell: bash
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: make setup_python build_python
+      shell: powershell
