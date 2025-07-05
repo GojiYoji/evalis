@@ -5,8 +5,7 @@ requirements_file=requirements.lock.txt
 python_gen_dir=src/fablex/__gen__/
 
 # region: PHONY stuff ---------------------------------------------------------
-.PHONY: \
-	build clean lint setup teardown test \
+.PHONY: build clean lint setup teardown test \
 	lint_pyright \
 	pip_clean pip_install pip_lock \
 
@@ -48,10 +47,12 @@ pip_clean:
 
 pip_install:
 	pip install -r requirements.lock.txt
+	# note: We need to run this from top directory so that we are next to `.venv`
 	pip install -e .[dev]
 	pip check
 
 pip_lock:
+	# note: We need to run this from top directory so that we are next to `.venv`
 	pip install -e .[dev]
 	pip freeze --exclude-editable > requirements.lock.txt
 

@@ -28,5 +28,8 @@ dev = [
 include = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "fablex.__version__" }
+version = { attr = "fablex.version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
