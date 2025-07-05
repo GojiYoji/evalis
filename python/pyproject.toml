@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psyval"
+dynamic = ["version"]
+description = "A polyglot safe evaluator of expressions from userland"
+readme = "README.md"
+authors = [
+  { name = "Paul Slaughter", email = "paul@souldzin.com" }
+]
+dependencies = [
+  "antlr4-python3-runtime==4.13.2"
+]
+
+[project.optional-dependencies]
+dev = [
+  "antlr4-tools==0.2.2",
+  "black==25.1.0",
+  "flake8==7.2.0",
+  "pyright==1.1.400"
+]
+
+[tool.pyright]
+include = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "psyval.__version__" }
+
+[tool.flake8]
+ignore = ["E501"]
+
