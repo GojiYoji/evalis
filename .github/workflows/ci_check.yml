@@ -35,4 +35,4 @@ jobs:
         uses: ./.github/actions/python-setup
 
       - name: Test with pytest
-        run: make pytest
+        run: make test_python
