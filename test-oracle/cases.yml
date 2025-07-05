@@ -32,3 +32,6 @@
     y: 3
     z: 3
   expected: 3
+
+- expr: (5 > 10) == false
+  expected: true
