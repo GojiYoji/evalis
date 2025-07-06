@@ -97,6 +97,13 @@ class FablexAstBuilder(BaseFablexVisitor):
             right=self.visit(ctx.expr(1)),
         )
 
+    def visitInExpr(self, ctx: FablexParser.InExprContext):
+        return BinaryOpNode(
+            op=BinaryOpType.IN,
+            left=self.visit(ctx.expr(0)),
+            right=self.visit(ctx.expr(1)),
+        )
+
     # Visit a parse tree produced by FablexParser#number.
     def visitNumber(self, ctx: FablexParser.NumberContext):
         text: str = ctx.getText()
@@ -110,9 +117,8 @@ class FablexAstBuilder(BaseFablexVisitor):
     def visitBoolean(self, ctx: FablexParser.BooleanContext):
         return LiteralNode(ctx.getText() == "true")
 
-    # Visit a parse tree produced by FablexParser#identifier.
     # Visit a parse tree produced by FablexParser#stringLiteralNode.
-    def visitStringLiteralNode(self, ctx: FablexParser.StringLiteralContext):
+    def visitStringLiteral(self, ctx: FablexParser.StringLiteralContext):
         raw = ctx.getText()
         unquoted = raw[1:-1]
         unescaped = unquoted.replace('\\"', '"').replace("\\\\", "\\")
