@@ -58,7 +58,9 @@ def read_grammar_info() -> GrammarInfo:
                         break
 
     return GrammarInfo(
-        reserved_words=reserved_words, binary_ops=binary_ops, unary_ops=unary_ops
+        reserved_words=reserved_words,
+        binary_ops=binary_ops,
+        unary_ops=unary_ops,
     )
 
 

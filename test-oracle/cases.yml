@@ -35,3 +35,15 @@
 
 - expr: (5 > 10) == false
   expected: true
+
+- expr: ("foo" in items) and all_good
+  context:
+    all_good: true
+    items: ["bar", "juice", "foo"]
+  expected: true
+
+- expr: ("foo" in items)
+  context:
+    all_good: true
+    items: ["bar", "juice"]
+  expected: false

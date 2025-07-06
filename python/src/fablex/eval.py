@@ -57,6 +57,9 @@ class FablexEval:
                     return left or right
                 case BinaryOpType.SUBTRACT:
                     return left - right
+                case BinaryOpType.IN:
+                    # TODO: Handle dynamic type coercion a bit better...
+                    return left in right
                 case _:
                     raise ValueError(f"Unexpected binary op found: {node.op}")
         if isinstance(node, UnaryOpNode):
