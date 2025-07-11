@@ -1,5 +1,5 @@
 from typing import Any
-from fablex.ast import (
+from evalis.ast import (
     BinaryOpType,
     LiteralNode,
     BinaryOpNode,
@@ -7,7 +7,7 @@ from fablex.ast import (
     UnaryOpNode,
     UnaryOpType,
 )
-from fablex.types import FablexEvalOptions
+from evalis.types import EvaluatorOptions
 
 
 def get_val_from_context(context: Any, key: Any) -> Any:
@@ -19,10 +19,10 @@ def get_val_from_context(context: Any, key: Any) -> Any:
         raise ValueError(f"Unexpected context type in get_val_from_context: {context}")
 
 
-class FablexEval:
-    _options: FablexEvalOptions
+class Evaluator:
+    _options: EvaluatorOptions
 
-    def __init__(self, options: FablexEvalOptions = FablexEvalOptions()):
+    def __init__(self, options: EvaluatorOptions = EvaluatorOptions()):
         self._options = options
 
     def evaluate(self, node: Any, context: Any) -> Any:

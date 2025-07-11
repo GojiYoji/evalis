@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from typing import Any
-from fablex.__gen__.grammar import BinaryOpType, UnaryOpType
+from evalis.__gen__.grammar import BinaryOpType, UnaryOpType
 
 
 # region: ast nodes -----------------------------------------------------------
 @dataclass(frozen=True)
 class ReferenceNode:
     root: str
-    children: "tuple[FablexNode, ...]"
+    children: "tuple[EvalisNode, ...]"
 
 
 @dataclass(frozen=True)
@@ -28,17 +28,17 @@ class LiteralNode:
     value: Any
 
 
-FablexNode = ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode
+EvalisNode = ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode
 
 
 # region: other types -------------------------------------------------------
 @dataclass(frozen=True)
-class FablexEvalOptions:
+class EvaluatorOptions:
     should_null_on_bad_access: bool = False
 
 
 @dataclass(frozen=True)
-class FablexSyntaxMessage:
+class SyntaxMessage:
     line: int
     column: int
     message: str

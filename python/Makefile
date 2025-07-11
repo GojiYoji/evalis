@@ -8,7 +8,7 @@ pip_install_target := pip_install
 endif
 
 requirements_file=requirements.lock.txt
-python_gen_dir=src/fablex/__gen__
+python_gen_dir=src/evalis/__gen__
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean lint setup teardown test \
@@ -18,7 +18,7 @@ python_gen_dir=src/fablex/__gen__
 build: $(python_gen_dir)/.antlr4.touch $(python_gen_dir)/grammar.py
 
 clean:
-	@rm -rf $(python_gen_dir)
+	@rm -rf $(python_gen_dir) ./__pycache__/ ./.pytest_cache/
 
 lint: lint_pyright lint_black lint_flake8
 

@@ -5,7 +5,7 @@
 // UNARY_OPS: NOT not
 // STOP
 // ----------------------------------------------------------------------------
-grammar Fablex;
+grammar Evalis;
 
 parse
     : expr EOF

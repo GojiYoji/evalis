@@ -1,10 +1,6 @@
-# Fablex
+# Evalis
 
-A polyglot, safe, user-friendly expression evaluator.
-
-## How do you say that?
-
-You can say "Fable-X" or "Fab-Lex". I don't really care.
+A polyglot, secure, user-friendly expression evaluator.
 
 ## How to contribute?
 

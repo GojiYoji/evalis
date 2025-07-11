@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fablex"
+name = "evalis"
 dynamic = ["version"]
 description = "A polyglot, safe, user-friendly expression evaluator."
 readme = "README.md"
@@ -28,7 +28,7 @@ dev = [
 include = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "fablex.version.__version__" }
+version = { attr = "evalis.version.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

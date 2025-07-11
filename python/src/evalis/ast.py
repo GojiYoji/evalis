@@ -1,5 +1,5 @@
-from fablex.__gen__.FablexVisitor import FablexVisitor as BaseFablexVisitor
-from fablex.__gen__.FablexParser import FablexParser
+from evalis.__gen__.EvalisVisitor import EvalisVisitor as BaseEvalisVisitor
+from evalis.__gen__.EvalisParser import EvalisParser
 from .types import (
     BinaryOpNode,
     BinaryOpType,
@@ -7,7 +7,7 @@ from .types import (
     UnaryOpType,
     LiteralNode,
     ReferenceNode,
-    FablexNode,
+    EvalisNode,
 )
 
 
@@ -18,11 +18,11 @@ def _get_op_text(ctx):
     return ctx.op.text
 
 
-class FablexAstBuilder(BaseFablexVisitor):
+class AstBuilder(BaseEvalisVisitor):
     def visitParse(self, ctx):
         return self.visit(ctx.expr())
 
-    # Visit a parse tree produced by FablexParser#AndExpr.
+    # Visit a parse tree produced by EvalisParser#AndExpr.
     def visitAndExpr(self, ctx):
         return BinaryOpNode(
             op=BinaryOpType.AND,
@@ -30,35 +30,35 @@ class FablexAstBuilder(BaseFablexVisitor):
             right=self.visit(ctx.expr(1)),
         )
 
-    # Visit a parse tree produced by FablexParser#MulDivExpr.
-    def visitMulDivExpr(self, ctx: FablexParser.MulDivExprContext):
+    # Visit a parse tree produced by EvalisParser#MulDivExpr.
+    def visitMulDivExpr(self, ctx: EvalisParser.MulDivExprContext):
         return BinaryOpNode(
             op=BinaryOpType(_get_op_text(ctx)),
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    # Visit a parse tree produced by FablexParser#EqualityExpr.
-    def visitEqualityExpr(self, ctx: FablexParser.EqualityExprContext):
+    # Visit a parse tree produced by EvalisParser#EqualityExpr.
+    def visitEqualityExpr(self, ctx: EvalisParser.EqualityExprContext):
         return BinaryOpNode(
             op=BinaryOpType(_get_op_text(ctx)),
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    # Visit a parse tree produced by FablexParser#NotExpr.
-    def visitNotExpr(self, ctx: FablexParser.NotExprContext):
+    # Visit a parse tree produced by EvalisParser#NotExpr.
+    def visitNotExpr(self, ctx: EvalisParser.NotExprContext):
         return UnaryOpNode(op=UnaryOpType.NOT, expr=self.visit(ctx.expr()))
 
-    # Visit a parse tree produced by FablexParser#RelationalExpr.
-    def visitRelationalExpr(self, ctx: FablexParser.RelationalExprContext):
+    # Visit a parse tree produced by EvalisParser#RelationalExpr.
+    def visitRelationalExpr(self, ctx: EvalisParser.RelationalExprContext):
         return BinaryOpNode(
             op=BinaryOpType(_get_op_text(ctx)),
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    def visitAtomExpr(self, ctx: FablexParser.AtomExprContext):
+    def visitAtomExpr(self, ctx: EvalisParser.AtomExprContext):
         # LiteralNode
         if ctx.atom().literal():
             return self.visit(ctx.atom().literal())
@@ -69,7 +69,7 @@ class FablexAstBuilder(BaseFablexVisitor):
 
         # Identifier (+ optional access suffixes)
         base_identifier = ctx.atom().identifier().getText()
-        parts: list[FablexNode] = []
+        parts: list[EvalisNode] = []
 
         for suffix in ctx.atom().accessSuffix():
             # Dot access
@@ -81,31 +81,31 @@ class FablexAstBuilder(BaseFablexVisitor):
 
         return ReferenceNode(root=base_identifier, children=tuple(parts))
 
-    # Visit a parse tree produced by FablexParser#AddSubExpr.
-    def visitAddSubExpr(self, ctx: FablexParser.AddSubExprContext):
+    # Visit a parse tree produced by EvalisParser#AddSubExpr.
+    def visitAddSubExpr(self, ctx: EvalisParser.AddSubExprContext):
         return BinaryOpNode(
             op=BinaryOpType(_get_op_text(ctx)),
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    # Visit a parse tree produced by FablexParser#OrExpr.
-    def visitOrExpr(self, ctx: FablexParser.OrExprContext):
+    # Visit a parse tree produced by EvalisParser#OrExpr.
+    def visitOrExpr(self, ctx: EvalisParser.OrExprContext):
         return BinaryOpNode(
             op=BinaryOpType.OR,
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    def visitInExpr(self, ctx: FablexParser.InExprContext):
+    def visitInExpr(self, ctx: EvalisParser.InExprContext):
         return BinaryOpNode(
             op=BinaryOpType.IN,
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
         )
 
-    # Visit a parse tree produced by FablexParser#number.
-    def visitNumber(self, ctx: FablexParser.NumberContext):
+    # Visit a parse tree produced by EvalisParser#number.
+    def visitNumber(self, ctx: EvalisParser.NumberContext):
         text: str = ctx.getText()
 
         if "." in text:
@@ -113,12 +113,12 @@ class FablexAstBuilder(BaseFablexVisitor):
 
         return LiteralNode(int(text))
 
-    # Visit a parse tree produced by FablexParser#boolean.
-    def visitBoolean(self, ctx: FablexParser.BooleanContext):
+    # Visit a parse tree produced by EvalisParser#boolean.
+    def visitBoolean(self, ctx: EvalisParser.BooleanContext):
         return LiteralNode(ctx.getText() == "true")
 
-    # Visit a parse tree produced by FablexParser#stringLiteralNode.
-    def visitStringLiteral(self, ctx: FablexParser.StringLiteralContext):
+    # Visit a parse tree produced by EvalisParser#stringLiteralNode.
+    def visitStringLiteral(self, ctx: EvalisParser.StringLiteralContext):
         raw = ctx.getText()
         unquoted = raw[1:-1]
         unescaped = unquoted.replace('\\"', '"').replace("\\\\", "\\")

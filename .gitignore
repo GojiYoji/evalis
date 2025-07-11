@@ -4,4 +4,4 @@
 __pycache__/
 
 # Generated stuff -------------------------------------------------------------
-python/src/fablex/__gen__/
+python/src/evalis/__gen__/
