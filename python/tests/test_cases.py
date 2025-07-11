@@ -1,7 +1,7 @@
 import pytest
 import yaml
 from pathlib import Path
-from fablex.fablex import evaluate_expression
+from evalis.evalis import evaluate_expression
 
 DIR_BASE = Path(__file__).resolve().parent.parent.parent
 TEST_ORACLE_YML = DIR_BASE / "test-oracle" / "cases.yml"

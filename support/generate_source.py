@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).parent))
 from py_utils.py_loader import load_type_from_path
 
 ROOT_DIR = Path(__file__).parent.parent
-GRAMMAR_PATH = ROOT_DIR / "grammar" / "Fablex.g4"
+GRAMMAR_PATH = ROOT_DIR / "grammar" / "Evalis.g4"
 
 
 class LineWriter:
