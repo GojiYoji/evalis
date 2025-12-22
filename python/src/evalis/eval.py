@@ -6,6 +6,7 @@ from evalis.ast import (
     ReferenceNode,
     UnaryOpNode,
     UnaryOpType,
+    ListComprehensionNode,
 )
 from evalis.types import EvaluatorOptions
 
@@ -78,6 +79,26 @@ class Evaluator:
                 current = self._lookup_reference(current, child_key)
 
             return current
+
+        if isinstance(node, ListComprehensionNode):
+            iterable = self.evaluate(node.iterable_expr, context)
+
+            if not isinstance(iterable, list):
+                if self._options.should_null_on_bad_access:
+                    return None
+                else:
+                    raise ValueError(
+                        f"List comprehension requires iterable to be a list, "
+                        f"got {type(iterable).__name__}"
+                    )
+
+            results = []
+            for item in iterable:
+                scoped_context = {**context, node.variable_name: item}
+                result = self.evaluate(node.element_expr, scoped_context)
+                results.append(result)
+
+            return results
 
         raise ValueError(f"Unexpected node type found: {node}")
 
