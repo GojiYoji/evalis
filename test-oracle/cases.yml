@@ -47,3 +47,52 @@
     all_good: true
     items: ["bar", "juice"]
   expected: false
+
+# List comprehension tests
+- expr: "[x * 2 for x in numbers]"
+  context:
+    numbers: [1, 2, 3]
+  expected: [2, 4, 6]
+
+- expr: "[item.name for item in users]"
+  context:
+    users:
+      - name: Alice
+      - name: Bob
+  expected: ["Alice", "Bob"]
+
+- expr: "[x + 10 for x in values]"
+  context:
+    values: [5, 15, 25]
+  expected: [15, 25, 35]
+
+- expr: "[(x * 2) + 1 for x in numbers]"
+  context:
+    numbers: [1, 2, 3]
+  expected: [3, 5, 7]
+
+- expr: "[item for item in empty]"
+  context:
+    empty: []
+  expected: []
+
+- expr: "[x + offset for x in numbers]"
+  context:
+    numbers: [1, 2, 3]
+    offset: 100
+  expected: [101, 102, 103]
+
+- expr: "[user.address.city for user in users]"
+  context:
+    users:
+      - address:
+          city: NYC
+      - address:
+          city: SF
+  expected: ["NYC", "SF"]
+
+# Array indexing inside list comprehension
+- expr: "[item[0] for item in matrix]"
+  context:
+    matrix: [[1, 2], [3, 4], [5, 6]]
+  expected: [1, 3, 5]

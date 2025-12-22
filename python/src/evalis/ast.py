@@ -7,6 +7,7 @@ from .types import (
     UnaryOpType,
     LiteralNode,
     ReferenceNode,
+    ListComprehensionNode,
     EvalisNode,
 )
 
@@ -59,19 +60,22 @@ class AstBuilder(BaseEvalisVisitor):
         )
 
     def visitAtomExpr(self, ctx: EvalisParser.AtomExprContext):
-        # LiteralNode
-        if ctx.atom().literal():
-            return self.visit(ctx.atom().literal())
+        return self.visit(ctx.atom())
 
-        # Parentheses
-        if ctx.atom().expr():
-            return self.visit(ctx.atom().expr())
+    # Visit a parse tree produced by EvalisParser#LiteralAtom.
+    def visitLiteralAtom(self, ctx):
+        return self.visit(ctx.literal())
 
-        # Identifier (+ optional access suffixes)
-        base_identifier = ctx.atom().identifier().getText()
+    # Visit a parse tree produced by EvalisParser#ParenAtom.
+    def visitParenAtom(self, ctx):
+        return self.visit(ctx.expr())
+
+    # Visit a parse tree produced by EvalisParser#IdentifierAtom.
+    def visitIdentifierAtom(self, ctx):
+        base_identifier = ctx.identifier().getText()
         parts: list[EvalisNode] = []
 
-        for suffix in ctx.atom().accessSuffix():
+        for suffix in ctx.accessSuffix():
             # Dot access
             if suffix.identifier():
                 parts.append(LiteralNode(suffix.identifier().getText()))
@@ -80,6 +84,14 @@ class AstBuilder(BaseEvalisVisitor):
                 parts.append(self.visit(suffix.expr()))
 
         return ReferenceNode(root=base_identifier, children=tuple(parts))
+
+    # Visit a parse tree produced by EvalisParser#ListComprehension.
+    def visitListComprehension(self, ctx):
+        return ListComprehensionNode(
+            element_expr=self.visit(ctx.expr(0)),
+            variable_name=ctx.identifier().getText(),
+            iterable_expr=self.visit(ctx.expr(1)),
+        )
 
     # Visit a parse tree produced by EvalisParser#AddSubExpr.
     def visitAddSubExpr(self, ctx: EvalisParser.AddSubExprContext):

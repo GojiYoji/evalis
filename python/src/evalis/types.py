@@ -28,7 +28,16 @@ class LiteralNode:
     value: Any
 
 
-EvalisNode = ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode
+@dataclass(frozen=True)
+class ListComprehensionNode:
+    element_expr: Any
+    variable_name: str
+    iterable_expr: Any
+
+
+EvalisNode = (
+    ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode | ListComprehensionNode
+)
 
 
 # region: other types -------------------------------------------------------
