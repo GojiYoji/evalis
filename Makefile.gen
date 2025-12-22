@@ -1,23 +1,23 @@
 # DO NOT EDIT!
 # This Makefile is generated from support/generate_makefile.py
-# Subdirs found: ['python']
+# Subdirs found: ['python', 'typescript']
 
 # region: top level ----------------------------------------
 .PHONY: all build clean lint setup teardown test
 
 all: build
 
-build: build_python
+build: build_python build_typescript
 
-clean: clean_python
+clean: clean_python clean_typescript
 
-lint: lint_python
+lint: lint_python lint_typescript
 
-setup: setup_python
+setup: setup_python setup_typescript
 
-teardown: teardown_python
+teardown: teardown_python teardown_typescript
 
-test: test_python
+test: test_python test_typescript
 
 # region: python ----------------------------------------
 .PHONY: build_python clean_python lint_python setup_python teardown_python test_python
@@ -39,4 +39,25 @@ teardown_python:
 
 test_python:
 	$(MAKE) -C python test
+
+# region: typescript ----------------------------------------
+.PHONY: build_typescript clean_typescript lint_typescript setup_typescript teardown_typescript test_typescript
+
+build_typescript:
+	$(MAKE) -C typescript build
+
+clean_typescript:
+	$(MAKE) -C typescript clean
+
+lint_typescript:
+	$(MAKE) -C typescript lint
+
+setup_typescript:
+	$(MAKE) -C typescript setup
+
+teardown_typescript:
+	$(MAKE) -C typescript teardown
+
+test_typescript:
+	$(MAKE) -C typescript test
 

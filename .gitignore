@@ -3,5 +3,11 @@
 *.egg-info/
 __pycache__/
 
+# NodeJS stuff ----------------------------------------------------------------
+node_modules/
+
 # Generated stuff -------------------------------------------------------------
 python/src/evalis/__gen__/
+typescript/src/__gen__/
+typescript/dist
+
