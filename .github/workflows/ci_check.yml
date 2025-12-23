@@ -15,6 +15,14 @@ jobs:
       - name: Check Makefile.gen
         run: ./support/check_makefile_gen.sh
 
+  check_version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Versions
+        run: make check_version
+
   lint_python:
     runs-on: ubuntu-latest
     steps:

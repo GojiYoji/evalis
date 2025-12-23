@@ -10,10 +10,14 @@ endif
 requirements_file=requirements.lock.txt
 python_gen_dir=src/evalis/__gen__
 
+VERSION := $(shell grep '^__version__' src/evalis/constants.py | cut -d'"' -f2)
+EXPRESSION_VERSION := $(shell grep '^EXPRESSION_VERSION' src/evalis/constants.py | cut -d'"' -f2)
+
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean lint setup teardown test \
 	lint_pyright \
 	pip_clean pip_install pip_install_ci pip_lock \
+	check_version
 
 build: $(python_gen_dir)/.antlr4.touch $(python_gen_dir)/grammar.py
 
@@ -28,6 +32,14 @@ teardown: pip_clean
 
 test:
 	pytest
+
+check_version:
+	@echo "[check_version] --------------------"
+	@$(ROOT_DIR)/support/check_readme_version_reference.sh Python $(VERSION)
+	@echo "[check_version:OK] -----------------"
+	@echo "[check_expression_version] ---------"
+	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
+	@echo "[check_expression_version:OK] ------"
 
 # region: python specific linters ---------------------------------------------
 lint_pyright:

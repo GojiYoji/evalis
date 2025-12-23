@@ -27,9 +27,14 @@ include ../Makefile.common
 # Define the directory where ANTLR will generate code
 gen_dir=src/<language>/__gen__
 
+# Extract version information from your package
+# Customize these commands based on your language's conventions
+VERSION := $(shell <command to extract package version>)
+EXPRESSION_VERSION := $(shell <command to extract EXPRESSION_VERSION from constants file>)
+
 # region: PHONY stuff ---------------------------------------------------------
 # Declare phony targets (targets that don't represent files)
-.PHONY: build clean lint setup teardown test
+.PHONY: build clean lint setup teardown test check_version
 
 # build: Compile/build the project
 # This target should:
@@ -82,6 +87,15 @@ test:
 	#   Java:       mvn test
 	#   C#:         dotnet test
 
+# check_version: Verify package version is in README and grammar version matches
+check_version:
+	@echo "[check_version] --------------------"
+	@$(ROOT_DIR)/support/check_readme_version_reference.sh <language-name> $(VERSION)
+	@echo "[check_version:OK] -----------------"
+	@echo "[check_expression_version] ---------"
+	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
+	@echo "[check_expression_version:OK] ------"
+
 # region: code generation -----------------------------------------------------
 # Generate language-specific grammar enums (operators, keywords, etc.)
 # This uses the generate.py script specific to your language
@@ -101,6 +115,9 @@ $(gen_dir)/.antlr4.touch: $(GRAMMAR_FILE)
 - Replace `<language>` with your language name (lowercase)
 - Replace `<Language>` with the ANTLR language target (e.g., `Go`, `CSharp`, `Java`)
 - Replace `<ext>` with your language's file extension (e.g., `go`, `rs`, `java`, `cs`)
+- Replace `<language-name>` in `check_version` with the display name for README (e.g., `Python`, `Go`, `Rust`)
+- Customize the `VERSION` and `EXPRESSION_VERSION` extraction commands for your language
+  - See `python/Makefile` for reference implementation
 - Fill in the build, lint, setup, and test commands for your language
 
 ### 3. Create Generate Script
