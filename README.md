@@ -53,3 +53,10 @@ make lint
 ```
 
 For language-specific commands, see the individual language directories.
+
+## Latest Versions
+
+| Package               | Version |
+| --------------------- | ------- |
+| Python                | 0.1.0   |
+| JavaScript/TypeScript | 0.1.0   |

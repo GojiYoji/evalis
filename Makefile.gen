@@ -3,7 +3,7 @@
 # Subdirs found: ['python', 'typescript']
 
 # region: top level ----------------------------------------
-.PHONY: all build clean lint setup teardown test
+.PHONY: all build clean lint setup teardown test check_version
 
 all: build
 
@@ -19,8 +19,10 @@ teardown: teardown_python teardown_typescript
 
 test: test_python test_typescript
 
+check_version: check_version_python check_version_typescript
+
 # region: python ----------------------------------------
-.PHONY: build_python clean_python lint_python setup_python teardown_python test_python
+.PHONY: build_python clean_python lint_python setup_python teardown_python test_python check_version_python
 
 build_python:
 	$(MAKE) -C python build
@@ -40,8 +42,11 @@ teardown_python:
 test_python:
 	$(MAKE) -C python test
 
+check_version_python:
+	$(MAKE) -C python check_version
+
 # region: typescript ----------------------------------------
-.PHONY: build_typescript clean_typescript lint_typescript setup_typescript teardown_typescript test_typescript
+.PHONY: build_typescript clean_typescript lint_typescript setup_typescript teardown_typescript test_typescript check_version_typescript
 
 build_typescript:
 	$(MAKE) -C typescript build
@@ -60,4 +65,7 @@ teardown_typescript:
 
 test_typescript:
 	$(MAKE) -C typescript test
+
+check_version_typescript:
+	$(MAKE) -C typescript check_version
 

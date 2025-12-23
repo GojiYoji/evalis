@@ -1,3 +1,4 @@
+export { EXPRESSION_VERSION } from './constants';
 export { parseAst, evaluateAst, evaluateExpression } from './evalis';
 export type {
   EvalisNode,

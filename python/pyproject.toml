@@ -28,7 +28,7 @@ dev = [
 include = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "evalis.version.__version__" }
+version = { attr = "evalis.constants.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

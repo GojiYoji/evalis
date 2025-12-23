@@ -2,11 +2,14 @@
 include ../Makefile.common
 
 ts_gen_dir=src/__gen__
+VERSION := $(shell grep '"version":' package.json | head -1 | cut -d'"' -f4)
+EXPRESSION_VERSION := $(shell grep 'EXPRESSION_VERSION' src/constants.ts | cut -d"'" -f2)
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean clean_gen lint setup teardown test \
 	lint_tsc lint_eslint lint_prettier \
-	npm_clean npm_install
+	npm_clean npm_install \
+	check_version
 
 build: $(ts_gen_dir)/.antlr4.touch $(ts_gen_dir)/grammar.ts
 	npm run build
@@ -25,6 +28,14 @@ teardown: npm_clean
 
 test:
 	npm test
+
+check_version:
+	@echo "[check_version] --------------------"
+	@$(ROOT_DIR)/support/check_readme_version_reference.sh JavaScript/TypeScript $(VERSION)
+	@echo "[check_version:OK] -----------------"
+	@echo "[check_expression_version] ---------"
+	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
+	@echo "[check_expression_version:OK] ------"
 
 # region: typescript specific linters -----------------------------------------
 lint_tsc:

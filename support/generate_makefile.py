@@ -6,7 +6,15 @@ ROOT_DIR = Path(__file__).parent.parent
 OUT_PATH = ROOT_DIR / "Makefile.gen"
 
 # These are the targets every subdir is expected to provide
-COMMON_TARGETS = ["build", "clean", "lint", "setup", "teardown", "test"]
+COMMON_TARGETS = [
+    "build",
+    "clean",
+    "lint",
+    "setup",
+    "teardown",
+    "test",
+    "check_version",
+]
 
 
 def _is_subdir(d: Path):
