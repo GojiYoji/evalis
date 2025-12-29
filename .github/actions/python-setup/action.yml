@@ -42,10 +42,10 @@ runs:
 
     - name: Install dependencies (bash)
       if: runner.os != 'Windows'
-      run: make python_setup python_build
+      run: make python_setup
       shell: bash
 
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
-      run: make python_setup python_build
+      run: make python_setup
       shell: powershell

@@ -73,9 +73,6 @@ jobs:
       - name: Node.js Setup
         uses: ./.github/actions/node-setup
 
-      - name: Install Dependencies
-        run: make typescript_setup
-
       - name: Prepack
         run: make typescript_prepack
 
@@ -91,9 +88,9 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: npm-package-${{ steps.parse.outputs.version }}
+          name: npm-evalis-${{ steps.parse.outputs.version }}
           path: typescript/*.tgz
-          retention-days: 90
+          retention-days: 7
 
       - name: Pack Summary
         run: |
@@ -124,7 +121,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: npm-package-${{ needs.pack.outputs.version }}
+          name: npm-evalis-${{ needs.pack.outputs.version }}
           path: typescript
 
       - name: Publish to NPM
