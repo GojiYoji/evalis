@@ -10,5 +10,5 @@ runs:
         cache-dependency-path: "typescript/package-lock.json"
 
     - name: Install Node dependencies
-      run: make typescript_setup && make typescript_build
+      run: make typescript_setup
       shell: bash

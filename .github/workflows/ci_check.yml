@@ -34,6 +34,9 @@ jobs:
       - name: Node.js Setup
         uses: ./.github/actions/node-setup
 
+      - name: Build
+        run: make build
+
       - name: Lint
         run: make lint
 
@@ -47,6 +50,9 @@ jobs:
 
       - name: Node.js Setup
         uses: ./.github/actions/node-setup
+
+      - name: Build
+        run: make build
 
       - name: Test
         run: make test
