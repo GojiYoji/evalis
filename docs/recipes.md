@@ -1,3 +1,5 @@
+<!-- vim: set noexpandtab tabstop=4 shiftwidth=4: -->
+
 # Recipes
 
 This document contains step-by-step guides for common tasks when working with Evalis.
@@ -9,8 +11,9 @@ Follow these steps to add support for a new programming language:
 ### 1. Create Directory Structure
 
 ```bash
-mkdir -p <language>/src/<language>/__gen__
+mkdir -p <language>/src/__gen__
 mkdir -p <language>/tests
+mkdir -p <language>/support # Optional: this houses language-specific scripts and helpers
 ```
 
 Replace `<language>` with your target language name (e.g., `go`, `rust`, `java`).
@@ -25,16 +28,17 @@ Copy the template Makefile below and customize it for your language:
 include ../Makefile.common
 
 # Define the directory where ANTLR will generate code
-gen_dir=src/<language>/__gen__
+gen_dir=src/__gen__
 
 # Extract version information from your package
 # Customize these commands based on your language's conventions
 VERSION := $(shell <command to extract package version>)
-EXPRESSION_VERSION := $(shell <command to extract EXPRESSION_VERSION from constants file>)
+EXPRESSION_VERSION := $(shell <command to extract EXPRESSION_VERSION>)
 
 # region: PHONY stuff ---------------------------------------------------------
 # Declare phony targets (targets that don't represent files)
-.PHONY: build clean lint setup teardown test check_version
+.PHONY: build clean lint setup teardown test \
+	get_version get_expression_version set_version
 
 # build: Compile/build the project
 # This target should:
@@ -87,20 +91,33 @@ test:
 	#   Java:       mvn test
 	#   C#:         dotnet test
 
-# check_version: Verify package version is in README and grammar version matches
-check_version:
-	@echo "[check_version] --------------------"
-	@$(ROOT_DIR)/support/check_readme_version_reference.sh <language-name> $(VERSION)
-	@echo "[check_version:OK] -----------------"
-	@echo "[check_expression_version] ---------"
-	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
-	@echo "[check_expression_version:OK] ------"
+# get_version: Print the package version
+get_version:
+	@# Extract version from package metadata
+	# Examples:
+	#   Python:     grep '^__version__' src/<language>/constants.py | cut -d'"' -f2
+	#   TypeScript: npm pkg get version | tr -d '"'
+
+# get_expression_version: Print the EXPRESSION_VERSION this implementation supports
+get_expression_version:
+	@# Extract EXPRESSION_VERSION from constants file
+	# Examples:
+	#   Python:     grep '^EXPRESSION_VERSION' src/<language>/constants.py | cut -d'"' -f2
+	#   TypeScript: grep 'EXPRESSION_VERSION' src/constants.ts | cut -d"'" -f2
+
+# set_version: Set the package version (expects VERSION environment variable)
+set_version:
+	@echo "Setting <language> package version to $${VERSION}"
+	@# Update version in package metadata
+	# Examples:
+	#   Python:     python support/set_version.py $$VERSION
+	#   TypeScript: npm version $$VERSION --no-git-tag-version --allow-same-version
 
 # region: code generation -----------------------------------------------------
 # Generate language-specific grammar enums (operators, keywords, etc.)
 # This uses the generate.py script specific to your language
 $(gen_dir)/grammar.<ext>: $(GRAMMAR_FILE) generate.py
-	python ../support/generate_source.py generate.py $(gen_dir)/grammar.<ext>
+	python ../support/generate_source.py support/generate.py $(gen_dir)/grammar.<ext>
 
 # Generate ANTLR parser and lexer for your target language
 # The .antlr4.touch file is used as a timestamp to avoid regenerating unnecessarily
@@ -112,12 +129,16 @@ $(gen_dir)/.antlr4.touch: $(GRAMMAR_FILE)
 ```
 
 **Customization Notes:**
+
 - Replace `<language>` with your language name (lowercase)
 - Replace `<Language>` with the ANTLR language target (e.g., `Go`, `CSharp`, `Java`)
 - Replace `<ext>` with your language's file extension (e.g., `go`, `rs`, `java`, `cs`)
-- Replace `<language-name>` in `check_version` with the display name for README (e.g., `Python`, `Go`, `Rust`)
 - Customize the `VERSION` and `EXPRESSION_VERSION` extraction commands for your language
-  - See `python/Makefile` for reference implementation
+  - See `python/Makefile` and `typescript/Makefile` for reference implementations
+- Implement the `get_version`, `get_expression_version`, and `set_version` targets
+  - `get_version`: Extract package version
+  - `get_expression_version`: Extract EXPRESSION_VERSION constant
+  - `set_version`: Update package version (expects `VERSION` environment variable)
 - Fill in the build, lint, setup, and test commands for your language
 
 ### 3. Create Generate Script
@@ -151,11 +172,12 @@ def generate(
 
 ### 4. Implement Core Components
 
-Create the following files in `<language>/src/<language>/`:
+Create the following files in `<language>/src/`:
 
 #### a. **types** - AST Node Type Definitions
 
 Define types/classes/structs for:
+
 - `ReferenceNode` - Property/variable access
 - `UnaryOpNode` - Single-operand operations
 - `BinaryOpNode` - Two-operand operations
@@ -170,6 +192,7 @@ See `python/src/evalis/types.py` for reference.
 #### b. **ast** - AST Builder (ANTLR Visitor)
 
 Implement a visitor that converts ANTLR parse tree to AST:
+
 - Extend the generated ANTLR visitor
 - Implement `visit*` methods for each grammar rule
 - Return appropriate AST nodes
@@ -179,6 +202,7 @@ See `python/src/evalis/ast.py` for reference.
 #### c. **eval** - Expression Evaluator
 
 Implement recursive evaluation of AST nodes:
+
 - Handle all operator types
 - Support property/array access
 - Implement list comprehensions
@@ -189,6 +213,7 @@ See `python/src/evalis/eval.py` for reference.
 #### d. **evalis** - Public API
 
 Implement three main functions:
+
 - `parseAst(expression)` - Parse string to AST
 - `evaluateAst(node, context, options)` - Evaluate AST
 - `evaluateExpression(expression, context, options)` - One-shot evaluation
@@ -198,12 +223,14 @@ See `python/src/evalis/evalis.py` for reference.
 ### 5. Implement Test Runner
 
 Create `<language>/tests/` with a test runner that:
+
 1. Loads `../test-oracle/cases.yml`
 2. Parses the YAML test cases
 3. Runs each test case through `evaluateExpression()`
 4. Asserts the result matches the expected value
 
 Example test case structure:
+
 ```yaml
 - expr: "foo.bar + 5"
   context:
@@ -223,21 +250,27 @@ python support/generate_makefile.py
 ```
 
 This will automatically detect your new `<language>/Makefile` and add targets like:
-- `make build_<language>`
-- `make test_<language>`
-- `make lint_<language>`
+
+- `make <language>_build`
+- `make <language>_test`
+- `make <language>_lint`
+- `make <language>_get_version`
+- `make <language>_check_version`
 
 ### 7. Verify Implementation
 
 ```bash
 # Test your implementation
-make test_<language>
+make <language>_test
 
 # Run linters
-make lint_<language>
+make <language>_lint
 
 # Build
-make build_<language>
+make <language>_build
+
+# Check version configuration
+make <language>_check_version
 
 # Test everything together
 make test
@@ -246,18 +279,11 @@ make test
 ### 8. Document Your Implementation
 
 Create `<language>/README.md` with:
+
 - Installation instructions
 - Usage examples
 - API reference
 - Development setup
-
-## Tips for Success
-
-1. **Use Python as reference** - The Python implementation is the reference implementation
-2. **Test incrementally** - Get basic operators working before list comprehensions
-3. **Follow language idioms** - Use language-specific patterns and conventions
-4. **Match Python behavior** - When in doubt, match what Python does
-5. **Add to CI/CD** - Set up automated testing for your implementation
 
 ## Need Help?
 

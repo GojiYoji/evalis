@@ -1,0 +1,145 @@
+name: Pack and Deploy NPM
+
+on:
+  push:
+    tags:
+      - 'typescript_v*'
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.parse.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse Version from Tag
+        id: parse
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          echo "Tag: $TAG_NAME"
+
+          # Extract version from tag (format: typescript_vX.Y.Z)
+          # Dev versions are never tagged, so we don't need to handle them
+          if [[ ! "$TAG_NAME" =~ ^typescript_v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "❌ ERROR: Invalid tag format: $TAG_NAME"
+            echo "Expected format: typescript_vX.Y.Z"
+            exit 1
+          fi
+
+          VERSION="${BASH_REMATCH[1]}"
+          echo "Parsed version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Verify Version Matches Package
+        run: |
+          EXPECTED_VERSION="${{ steps.parse.outputs.version }}"
+          PACKAGE_VERSION=$(make -s typescript_get_version)
+
+          echo "Tag version:     $EXPECTED_VERSION"
+          echo "Package version: $PACKAGE_VERSION"
+
+          if [ "$EXPECTED_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "❌ ERROR: Version mismatch!"
+            echo "Tag says $EXPECTED_VERSION but package.json says $PACKAGE_VERSION"
+            exit 1
+          fi
+
+          echo "✅ Versions match"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        working-directory: typescript
+        run: npm ci
+
+      - name: Build Package
+        working-directory: typescript
+        run: npm run build
+
+      - name: Pack Package
+        id: pack
+        working-directory: typescript
+        run: |
+          # Create tarball
+          TARBALL=$(npm pack)
+          echo "Created: $TARBALL"
+          echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-${{ steps.parse.outputs.version }}
+          path: typescript/*.tgz
+          retention-days: 90
+
+      - name: Pack Summary
+        run: |
+          VERSION="${{ steps.parse.outputs.version }}"
+
+          echo "## Pack Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package**: evalis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Package built and uploaded as artifact" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 Proceeding to deployment..." >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    needs: pack
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/evalis
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-package-${{ needs.pack.outputs.version }}
+          path: typescript
+
+      - name: Publish to NPM
+        working-directory: typescript
+        run: |
+          # Find the tarball
+          TARBALL=$(ls evalis-*.tgz)
+          echo "Publishing: $TARBALL"
+
+          # Publish the tarball directly
+          npm publish "$TARBALL" --access public --dry-run  # TODO: Remove --dry-run to enable actual publishing
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deploy Summary
+        run: |
+          VERSION="${{ needs.pack.outputs.version }}"
+
+          echo "## NPM Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package**: evalis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully published to npm!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Install with:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "npm install evalis@$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

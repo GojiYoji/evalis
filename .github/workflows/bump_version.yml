@@ -1,0 +1,125 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      subdir:
+        description: 'Language implementation to bump'
+        required: true
+        type: choice
+        options:
+          - typescript
+          - python
+      bump_type:
+        description: 'Type of version bump'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+          - dev
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check CI Status on Main
+        run: |
+          # Get the latest commit on main
+          MAIN_SHA=$(git rev-parse origin/main)
+          echo "Latest commit on main: $MAIN_SHA"
+
+          # Check if CI passed (using GitHub API)
+          STATUS=$(gh api repos/${{ github.repository }}/commits/$MAIN_SHA/status --jq '.state')
+          echo "CI status: $STATUS"
+
+          if [ "$STATUS" != "success" ]; then
+            echo "❌ ERROR: CI has not passed on main branch"
+            echo "Current status: $STATUS"
+            exit 1
+          fi
+
+          echo "✅ CI passed on main"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        id: bump
+        run: |
+          SUBDIR="${{ inputs.subdir }}"
+          BUMP_TYPE="${{ inputs.bump_type }}"
+
+          echo "Bumping $SUBDIR version with $BUMP_TYPE"
+
+          # Run the bump script
+          ./support/bump_subdir_version.sh "$SUBDIR" "$BUMP_TYPE"
+
+          # Get the new version
+          NEW_VERSION=$(make -s "${SUBDIR}_get_version")
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          # Check if this is a dev version
+          if [[ "$NEW_VERSION" == *"-dev"* ]]; then
+            echo "is_dev=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_dev=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit Version Bump
+        run: |
+          SUBDIR="${{ inputs.subdir }}"
+          NEW_VERSION="${{ steps.bump.outputs.version }}"
+
+          git add "$SUBDIR/"
+          git commit -m "chore($SUBDIR): bump version to $NEW_VERSION"
+
+      - name: Create Tag (if not dev)
+        if: steps.bump.outputs.is_dev == 'false'
+        run: |
+          SUBDIR="${{ inputs.subdir }}"
+          NEW_VERSION="${{ steps.bump.outputs.version }}"
+          TAG_NAME="${SUBDIR}_v${NEW_VERSION}"
+
+          echo "Creating tag: $TAG_NAME"
+          git tag -a "$TAG_NAME" -m "Release $SUBDIR $NEW_VERSION"
+
+      - name: Push Changes
+        run: |
+          git push origin main
+          git push origin --tags
+
+      - name: Summary
+        run: |
+          SUBDIR="${{ inputs.subdir }}"
+          NEW_VERSION="${{ steps.bump.outputs.version }}"
+          IS_DEV="${{ steps.bump.outputs.is_dev }}"
+
+          echo "## Version Bump Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Subdir**: $SUBDIR" >> $GITHUB_STEP_SUMMARY
+          echo "- **New Version**: $NEW_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type**: ${{ inputs.bump_type }}" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$IS_DEV" == "false" ]; then
+            TAG_NAME="${SUBDIR}_v${NEW_VERSION}"
+            echo "- **Tag Created**: \`$TAG_NAME\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🚀 Deployment workflow will be triggered automatically" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Dev version - no tag created, no deployment triggered" >> $GITHUB_STEP_SUMMARY
+          fi
