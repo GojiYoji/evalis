@@ -30,11 +30,6 @@ include ../Makefile.common
 # Define the directory where ANTLR will generate code
 gen_dir=src/__gen__
 
-# Extract version information from your package
-# Customize these commands based on your language's conventions
-VERSION := $(shell <command to extract package version>)
-EXPRESSION_VERSION := $(shell <command to extract EXPRESSION_VERSION>)
-
 # region: PHONY stuff ---------------------------------------------------------
 # Declare phony targets (targets that don't represent files)
 .PHONY: build clean lint setup teardown test \

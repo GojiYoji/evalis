@@ -2,8 +2,6 @@
 include ../Makefile.common
 
 ts_gen_dir=src/__gen__
-VERSION := $(shell grep '"version":' package.json | head -1 | cut -d'"' -f4)
-EXPRESSION_VERSION := $(shell grep 'EXPRESSION_VERSION' src/constants.ts | cut -d"'" -f2)
 
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean clean_gen lint setup teardown test \
