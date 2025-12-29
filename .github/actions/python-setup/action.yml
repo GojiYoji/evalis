@@ -42,7 +42,7 @@ runs:
 
     - name: Install dependencies (bash)
       if: runner.os != 'Windows'
-      run: make python_setup pyhton_build
+      run: make python_setup python_build
       shell: bash
 
     - name: Install dependencies (Windows)
