@@ -1,0 +1,114 @@
+name: Tag Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      subdir:
+        description: "Language implementation to tag"
+        required: true
+        type: choice
+        options:
+          - typescript
+          - python
+
+permissions:
+  contents: write
+  statuses: read
+  checks: read
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify commit is on main
+        run: |
+          CURRENT_SHA="${{ github.sha }}"
+          MAIN_SHA=$(git rev-parse origin/main)
+
+          echo "Current SHA: $CURRENT_SHA"
+          echo "Main HEAD:   $MAIN_SHA"
+
+          # Check if this commit is reachable from origin/main
+          if ! git merge-base --is-ancestor "$CURRENT_SHA" origin/main; then
+            echo "ERROR: Commit $CURRENT_SHA is not on origin/main branch"
+            echo "Please ensure this commit has been merged to main"
+            exit 1
+          fi
+
+          echo "Verified: commit is on main"
+
+      - name: Check CI Status
+        run: |
+          CURRENT_SHA="${{ github.sha }}"
+
+          # Check if CI passed on this commit
+          STATUS=$(gh api repos/${{ github.repository }}/commits/$CURRENT_SHA/status --jq '.state')
+          echo "CI status for $CURRENT_SHA: $STATUS"
+
+          if [ "$STATUS" != "success" ]; then
+            echo "ERROR: CI has not passed for this commit"
+            echo "Current status: $STATUS"
+            exit 1
+          fi
+
+          echo "CI passed for this commit"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Get Version
+        id: version
+        run: |
+          SUBDIR="${{ inputs.subdir }}"
+          VERSION=$(make -s "${SUBDIR}_get_version")
+
+          echo "Current ${SUBDIR} version: ${VERSION}"
+
+          # Check if this is a dev version
+          if [[ "$VERSION" == *"-dev"* ]]; then
+            echo "❌ ERROR: Cannot tag a dev version: ${VERSION}"
+            echo "         Please bump to a release version first (major/minor/patch)"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "subdir=$SUBDIR" >> $GITHUB_OUTPUT
+
+      - name: Create Tag
+        run: |
+          SUBDIR="${{ steps.version.outputs.subdir }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG_NAME="${SUBDIR}_v${VERSION}"
+
+          # Check if tag already exists on remote
+          if [ -n "$(git ls-remote --tags origin "refs/tags/${TAG_NAME}")" ]; then
+            echo "❌ ERROR: Tag already exists: $TAG_NAME"
+            echo "         If you need to retag, delete the tag first:"
+            echo "         git push origin :refs/tags/$TAG_NAME"
+            exit 1
+          fi
+
+          echo "Creating tag: $TAG_NAME"
+          git tag -a "$TAG_NAME" -m "Release $SUBDIR $VERSION"
+
+          echo "Pushing tag..."
+          git push origin "$TAG_NAME"
+
+          echo "✅ Successfully created and pushed tag: $TAG_NAME"
+
+      - name: Summary
+        run: |
+          SUBDIR="${{ steps.version.outputs.subdir }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG_NAME="${SUBDIR}_v${VERSION}"
+
+          echo "## Tag Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Language**: $SUBDIR" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: \`$TAG_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 Deployment workflow will be triggered automatically" >> $GITHUB_STEP_SUMMARY
