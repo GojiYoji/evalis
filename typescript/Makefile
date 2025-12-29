@@ -9,7 +9,7 @@ EXPRESSION_VERSION := $(shell grep 'EXPRESSION_VERSION' src/constants.ts | cut -
 .PHONY: build clean clean_gen lint setup teardown test \
 	lint_tsc lint_eslint lint_prettier \
 	npm_clean npm_install \
-	check_version
+	get_version get_expression_version set_version
 
 build: $(ts_gen_dir)/.antlr4.touch $(ts_gen_dir)/grammar.ts
 	npm run build
@@ -29,13 +29,15 @@ teardown: npm_clean
 test:
 	npm test
 
-check_version:
-	@echo "[check_version] --------------------"
-	@$(ROOT_DIR)/support/check_readme_version_reference.sh JavaScript/TypeScript $(VERSION)
-	@echo "[check_version:OK] -----------------"
-	@echo "[check_expression_version] ---------"
-	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
-	@echo "[check_expression_version:OK] ------"
+get_version:
+	@npm pkg get version | tr -d '"'
+
+get_expression_version:
+	@grep 'EXPRESSION_VERSION' src/constants.ts | cut -d"'" -f2
+
+set_version:
+	@echo "Setting TypeScript package version to $${VERSION}"
+	@npm version $${VERSION} --no-git-tag-version --allow-same-version
 
 # region: typescript specific linters -----------------------------------------
 lint_tsc:

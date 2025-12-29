@@ -23,18 +23,21 @@ jobs:
       - name: Check Versions
         run: make check_version
 
-  lint_python:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Python Setup
         uses: ./.github/actions/python-setup
+
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
 
       - name: Lint
-        run: make lint_python
+        run: make lint
 
-  test_python:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,5 +45,8 @@ jobs:
       - name: Python Setup
         uses: ./.github/actions/python-setup
 
-      - name: Test with pytest
-        run: make test_python
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
+
+      - name: Test
+        run: make test

@@ -15,6 +15,9 @@ This document outlines the roadmap, priorities, and future enhancements for Eval
 
 ### Publishing & Distribution
 
+- [ ] **Maintain changelog**
+  - Track breaking changes, features, and fixes for each release
+
 - [ ] **Publish Python package to PyPI**
   - Set up package metadata
   - Configure build system (setuptools/poetry)

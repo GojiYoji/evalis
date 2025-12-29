@@ -3,69 +3,92 @@
 # Subdirs found: ['python', 'typescript']
 
 # region: top level ----------------------------------------
-.PHONY: all build clean lint setup teardown test check_version
+.PHONY: all build clean lint setup teardown test get_version get_expression_version set_version
 
 all: build
 
-build: build_python build_typescript
+build: python_build typescript_build
 
-clean: clean_python clean_typescript
+clean: python_clean typescript_clean
 
-lint: lint_python lint_typescript
+lint: python_lint typescript_lint
 
-setup: setup_python setup_typescript
+setup: python_setup typescript_setup
 
-teardown: teardown_python teardown_typescript
+teardown: python_teardown typescript_teardown
 
-test: test_python test_typescript
+test: python_test typescript_test
 
-check_version: check_version_python check_version_typescript
+get_version: python_get_version typescript_get_version
+
+get_expression_version: python_get_expression_version typescript_get_expression_version
+
+set_version: python_set_version typescript_set_version
+
+check_version: python_check_version typescript_check_version
 
 # region: python ----------------------------------------
-.PHONY: build_python clean_python lint_python setup_python teardown_python test_python check_version_python
+.PHONY: python_build python_clean python_lint python_setup python_teardown python_test python_get_version python_get_expression_version python_set_version python_check_version
 
-build_python:
+python_build:
 	$(MAKE) -C python build
 
-clean_python:
+python_clean:
 	$(MAKE) -C python clean
 
-lint_python:
+python_lint:
 	$(MAKE) -C python lint
 
-setup_python:
+python_setup:
 	$(MAKE) -C python setup
 
-teardown_python:
+python_teardown:
 	$(MAKE) -C python teardown
 
-test_python:
+python_test:
 	$(MAKE) -C python test
 
-check_version_python:
-	$(MAKE) -C python check_version
+python_get_version:
+	$(MAKE) -C python get_version
+
+python_get_expression_version:
+	$(MAKE) -C python get_expression_version
+
+python_set_version:
+	$(MAKE) -C python set_version
+
+python_check_version:
+	@./support/check_subdir_version.sh python
 
 # region: typescript ----------------------------------------
-.PHONY: build_typescript clean_typescript lint_typescript setup_typescript teardown_typescript test_typescript check_version_typescript
+.PHONY: typescript_build typescript_clean typescript_lint typescript_setup typescript_teardown typescript_test typescript_get_version typescript_get_expression_version typescript_set_version typescript_check_version
 
-build_typescript:
+typescript_build:
 	$(MAKE) -C typescript build
 
-clean_typescript:
+typescript_clean:
 	$(MAKE) -C typescript clean
 
-lint_typescript:
+typescript_lint:
 	$(MAKE) -C typescript lint
 
-setup_typescript:
+typescript_setup:
 	$(MAKE) -C typescript setup
 
-teardown_typescript:
+typescript_teardown:
 	$(MAKE) -C typescript teardown
 
-test_typescript:
+typescript_test:
 	$(MAKE) -C typescript test
 
-check_version_typescript:
-	$(MAKE) -C typescript check_version
+typescript_get_version:
+	$(MAKE) -C typescript get_version
 
+typescript_get_expression_version:
+	$(MAKE) -C typescript get_expression_version
+
+typescript_set_version:
+	$(MAKE) -C typescript set_version
+
+typescript_check_version:
+	@./support/check_subdir_version.sh typescript

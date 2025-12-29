@@ -54,9 +54,9 @@ make lint
 
 For language-specific commands, see the individual language directories.
 
-## Latest Versions
+## Latest Release Versions
 
-| Package               | Version |
-| --------------------- | ------- |
-| Python                | 0.1.0   |
-| JavaScript/TypeScript | 0.1.0   |
+| Package    | Release Version |
+| ---------- | --------------- |
+| python     | 0.1.0           |
+| typescript | 0.1.0           |

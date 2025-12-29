@@ -10,14 +10,11 @@ endif
 requirements_file=requirements.lock.txt
 python_gen_dir=src/evalis/__gen__
 
-VERSION := $(shell grep '^__version__' src/evalis/constants.py | cut -d'"' -f2)
-EXPRESSION_VERSION := $(shell grep '^EXPRESSION_VERSION' src/evalis/constants.py | cut -d'"' -f2)
-
 # region: PHONY stuff ---------------------------------------------------------
 .PHONY: build clean lint setup teardown test \
 	lint_pyright \
 	pip_clean pip_install pip_install_ci pip_lock \
-	check_version
+	get_version get_expression_version set_version
 
 build: $(python_gen_dir)/.antlr4.touch $(python_gen_dir)/grammar.py
 
@@ -33,13 +30,15 @@ teardown: pip_clean
 test:
 	pytest
 
-check_version:
-	@echo "[check_version] --------------------"
-	@$(ROOT_DIR)/support/check_readme_version_reference.sh Python $(VERSION)
-	@echo "[check_version:OK] -----------------"
-	@echo "[check_expression_version] ---------"
-	@$(ROOT_DIR)/support/check_expression_version_reference.sh $(EXPRESSION_VERSION)
-	@echo "[check_expression_version:OK] ------"
+get_version:
+	@support/get_version.sh
+
+get_expression_version:
+	@support/get_expression_version.sh
+
+set_version:
+	@echo "Setting python package version to $${VERSION}"
+	@support/set_version.py $$VERSION
 
 # region: python specific linters ---------------------------------------------
 lint_pyright:
@@ -79,8 +78,8 @@ pip_lock:
 	pip-compile --generate-hashes --extra dev -o requirements.lock.txt pyproject.toml
 
 # region: real stuff ----------------------------------------------------------
-$(python_gen_dir)/grammar.py: $(GRAMMAR_FILE) generate.py
-	python ../support/generate_source.py generate.py $(python_gen_dir)/grammar.py
+$(python_gen_dir)/grammar.py: $(GRAMMAR_FILE) support/generate.py
+	python ../support/generate_source.py support/generate.py $(python_gen_dir)/grammar.py
 
 $(python_gen_dir)/.antlr4.touch: $(GRAMMAR_FILE) $(requirements_file)
 	@rm -rf $(python_gen_dir)
