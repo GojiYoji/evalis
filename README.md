@@ -2,24 +2,24 @@
 
 A polyglot, secure, user-friendly expression evaluator.
 
-## ⚠️ Early Development
+## Early Development
 
 This project is in early development. Feel free to adopt and use at your discretion, or contribute to make it better! :)
 
-## 📖 Documentation
+## Documentation
 
 - **[Architecture](./docs/architecture.md)** - Learn about the polyglot design, shared grammar, and test suite architecture
 - **[Recipes](./docs/recipes.md)** - Step-by-step guides for common tasks (e.g., adding a new language)
 - **[Next Steps](./docs/TODO.md)** - View the roadmap, TODOs, and priorities
 
-## 🚀 How to Use?
+## How to Use?
 
 Evalis has implementations in multiple languages. Check out the language-specific documentation:
 
 - **[Python](./python/README.md)** - Python implementation
 - **[TypeScript](./typescript/README.md)** - TypeScript/JavaScript implementation
 
-## 🤝 How to Contribute?
+## How to Contribute?
 
 ### Prerequisites
 
@@ -59,4 +59,4 @@ For language-specific commands, see the individual language directories.
 | Package    | Release Version |
 | ---------- | --------------- |
 | python     | 0.1.0           |
-| typescript | 0.1.1           |
+| typescript | 0.1.2           |
