@@ -4,23 +4,52 @@ This document explains how to bump versions and deploy packages.
 
 ## Version Bumping
 
-Version bumping is done through a manual GitHub Actions workflow.
+Version bumping is done locally using the `bump_subdir_version.sh` script, followed by creating a tag via GitHub Actions.
 
 ### Process
 
-1. Go to **Actions** → **Bump Version** → **Run workflow**
-2. Select:
-   - **Language**: `typescript` or `python`
-   - **Bump Type**: `major`, `minor`, `patch`, or `dev`
+**Step 1: Bump Version Locally**
+
+```bash
+# Bump version (creates commit automatically)
+./support/bump_subdir_version.sh <language> <bump-type>
+
+# Examples:
+./support/bump_subdir_version.sh typescript minor
+./support/bump_subdir_version.sh python dev
+
+# Optional flags:
+./support/bump_subdir_version.sh typescript patch --no-commit  # Skip auto-commit
+./support/bump_subdir_version.sh python major --force          # Allow uncommitted changes
+```
+
+The script will:
+- Bump the version using semantic versioning rules
+- Auto-commit the change (unless `--no-commit` or `--force` is used)
+- Display next steps
+
+**Step 2: Create PR and Merge**
+
+1. Push your branch: `git push origin <branch-name>`
+2. Create a pull request
+3. Wait for CI checks to pass
+4. Merge to main
+
+**Step 3: Tag the Release**
+
+After your PR is merged to main:
+
+1. Go to **Actions** → **Tag Version** → **Run workflow**
+2. Select the **Language** you want to tag (must match the version you just bumped)
 3. Click **Run workflow**
 
 The workflow will:
-
-- ✅ Verify CI passed on main
-- 🔄 Bump the version using `bump_subdir_version.sh`
-- 📝 Commit the version change to main
-- 🏷️ Create a tag `<language>_v<version>` (if not a dev version)
-- 🚀 Trigger deployment automatically (if not a dev version)
+- Verify CI passed on main
+- Read the current version from the repo
+- Error if version is dev (can't tag dev versions)
+- Error if tag already exists
+- Create and push tag `<language>_v<version>`
+- Trigger deployment automatically
 
 ### Version Bump Types
 
@@ -86,7 +115,7 @@ Deployment happens automatically when a release version tag is pushed, following
 - `NPM_TOKEN` secret must be configured
 - Tag must match `typescript_vX.Y.Z` format (release versions only)
 - Version in tag must match version in `package.json`
-- CI must have passed on main (enforced by bump workflow)
+- CI must have passed on main (checked by tag workflow)
 
 ### PyPI Deployment
 
