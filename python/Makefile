@@ -40,6 +40,8 @@ set_version:
 	@echo "Setting python package version to $${VERSION}"
 	@support/set_version.py $$VERSION
 
+prepack: LICENSE
+
 # region: python specific linters ---------------------------------------------
 lint_pyright:
 	@echo "[pyright] ------------------"
@@ -86,3 +88,6 @@ $(python_gen_dir)/.antlr4.touch: $(GRAMMAR_FILE) $(requirements_file)
 	@mkdir -p $(python_gen_dir)
 	antlr4 -Dlanguage=Python3 -visitor $(GRAMMAR_FILE) -o $(python_gen_dir)
 	@touch $(python_gen_dir)/.antlr4.touch
+
+LICENSE: ../LICENSE
+	@cp ../LICENSE LICENSE

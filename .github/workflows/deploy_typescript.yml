@@ -54,14 +54,12 @@ jobs:
         uses: ./.github/actions/node-setup
 
       - name: Install Dependencies
-        working-directory: typescript
-        run: npm ci
+        run: make typescript_setup
 
-      - name: Build Package
-        working-directory: typescript
-        run: npm run build
+      - name: Prepack
+        run: make typescript_prepack
 
-      - name: Pack Package
+      - name: Pack
         id: pack
         working-directory: typescript
         run: |

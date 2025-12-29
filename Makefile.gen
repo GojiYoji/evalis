@@ -3,7 +3,7 @@
 # Subdirs found: ['python', 'typescript']
 
 # region: top level ----------------------------------------
-.PHONY: all build clean lint setup teardown test get_version get_expression_version set_version
+.PHONY: all build clean lint setup teardown test get_version get_expression_version set_version prepack
 
 all: build
 
@@ -25,10 +25,12 @@ get_expression_version: python_get_expression_version typescript_get_expression_
 
 set_version: python_set_version typescript_set_version
 
+prepack: python_prepack typescript_prepack
+
 check_version: python_check_version typescript_check_version
 
 # region: python ----------------------------------------
-.PHONY: python_build python_clean python_lint python_setup python_teardown python_test python_get_version python_get_expression_version python_set_version python_check_version
+.PHONY: python_build python_clean python_lint python_setup python_teardown python_test python_get_version python_get_expression_version python_set_version python_prepack python_check_version
 
 python_build:
 	$(MAKE) -C python build
@@ -57,11 +59,14 @@ python_get_expression_version:
 python_set_version:
 	$(MAKE) -C python set_version
 
+python_prepack:
+	$(MAKE) -C python prepack
+
 python_check_version:
 	@./support/check_subdir_version.sh python
 
 # region: typescript ----------------------------------------
-.PHONY: typescript_build typescript_clean typescript_lint typescript_setup typescript_teardown typescript_test typescript_get_version typescript_get_expression_version typescript_set_version typescript_check_version
+.PHONY: typescript_build typescript_clean typescript_lint typescript_setup typescript_teardown typescript_test typescript_get_version typescript_get_expression_version typescript_set_version typescript_prepack typescript_check_version
 
 typescript_build:
 	$(MAKE) -C typescript build
@@ -89,6 +94,9 @@ typescript_get_expression_version:
 
 typescript_set_version:
 	$(MAKE) -C typescript set_version
+
+typescript_prepack:
+	$(MAKE) -C typescript prepack
 
 typescript_check_version:
 	@./support/check_subdir_version.sh typescript

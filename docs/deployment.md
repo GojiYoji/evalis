@@ -24,6 +24,7 @@ Version bumping is done locally using the `bump_subdir_version.sh` script, follo
 ```
 
 The script will:
+
 - Bump the version using semantic versioning rules
 - Auto-commit the change (unless `--no-commit` or `--force` is used)
 - Display next steps
@@ -44,6 +45,7 @@ After your PR is merged to main:
 3. Click **Run workflow**
 
 The workflow will:
+
 - Verify CI passed on main
 - Read the current version from the repo
 - Error if version is dev (can't tag dev versions)
@@ -88,7 +90,7 @@ Deployment happens automatically when a release version tag is pushed, following
 
 ### NPM Deployment
 
-**Workflow**: `.github/workflows/typescript_pack_and_deploy.yml`
+**Workflow**: `.github/workflows/deploy_typescript.yml`
 
 **Trigger**: Tag matching `typescript_v*` (e.g., `typescript_v0.1.0`)
 

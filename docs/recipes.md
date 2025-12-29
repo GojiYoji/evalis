@@ -33,7 +33,7 @@ gen_dir=src/__gen__
 # region: PHONY stuff ---------------------------------------------------------
 # Declare phony targets (targets that don't represent files)
 .PHONY: build clean lint setup teardown test \
-	get_version get_expression_version set_version
+	get_version get_expression_version set_version prepack
 
 # build: Compile/build the project
 # This target should:
@@ -107,6 +107,17 @@ set_version:
 	# Examples:
 	#   Python:     python support/set_version.py $$VERSION
 	#   TypeScript: npm version $$VERSION --no-git-tag-version --allow-same-version
+
+# prepack: Prepare package for packing (e.g., before npm pack)
+# This target ensures the package is fully built and includes necessary files
+# like LICENSE that should be copied from the root
+prepack: build LICENSE
+
+# LICENSE: Copy LICENSE from root to package directory
+# Add this target if your package needs to include the root LICENSE
+# Make sure to add */LICENSE to .gitignore to ignore generated copies
+LICENSE: ../LICENSE
+	@cp ../LICENSE LICENSE
 
 # region: code generation -----------------------------------------------------
 # Generate language-specific grammar enums (operators, keywords, etc.)

@@ -18,6 +18,7 @@ COMMON_TARGETS = [
     "get_version",
     "get_expression_version",
     "set_version",
+    "prepack",
 ]
 
 
