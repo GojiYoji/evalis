@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: write
+  statuses: read
+  checks: read
 
 jobs:
   bump:
