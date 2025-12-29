@@ -11,3 +11,4 @@ runs:
 
     - name: Install Node dependencies
       run: make typescript_setup && make typescript_build
+      shell: bash
