@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # region: common --------------------------------------------------------------
-set -xeuo pipefail
+set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # region: get arguments -------------------------------------------------------
