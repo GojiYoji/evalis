@@ -83,8 +83,8 @@ jobs:
         id: pack
         working-directory: typescript
         run: |
-          # Create tarball
-          TARBALL=$(npm pack)
+          # Create tarball (get last line since prepack outputs other lines)
+          TARBALL=$(npm pack | tail -1)
           echo "Created: $TARBALL"
           echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
 
