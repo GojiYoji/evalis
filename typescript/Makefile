@@ -7,10 +7,10 @@ ts_gen_dir=src/__gen__
 .PHONY: build clean clean_gen lint setup teardown test \
 	lint_tsc lint_eslint lint_prettier \
 	npm_clean npm_install \
-	get_version get_expression_version set_version
+	get_version get_expression_version set_version \
+	build_tsc
 
-build: $(ts_gen_dir)/.antlr4.touch $(ts_gen_dir)/grammar.ts
-	npm run build
+build: $(ts_gen_dir)/.antlr4.touch $(ts_gen_dir)/grammar.ts build_tsc
 
 clean: clean_gen
 	@rm -rf ./node_modules/ ./dist/
@@ -36,6 +36,12 @@ get_expression_version:
 set_version:
 	@echo "Setting TypeScript package version to $${VERSION}"
 	@npm version $${VERSION} --no-git-tag-version --allow-same-version
+
+prepack: build LICENSE
+
+# region: typescript specific build -------------------------------------------
+build_tsc: $(ts_gen_dir)/grammar.ts
+	@npm run build:tsc
 
 # region: typescript specific linters -----------------------------------------
 lint_tsc:
@@ -69,3 +75,6 @@ $(ts_gen_dir)/.antlr4.touch: $(GRAMMAR_FILE)
 	@mkdir -p $(ts_gen_dir)
 	antlr4 -Dlanguage=TypeScript -visitor $(GRAMMAR_FILE) -o $(ts_gen_dir)
 	@touch $(ts_gen_dir)/.antlr4.touch
+
+LICENSE: ../LICENSE
+	@cp ../LICENSE LICENSE
