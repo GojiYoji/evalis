@@ -3,7 +3,7 @@ name: Pack and Deploy NPM
 on:
   push:
     tags:
-      - 'typescript_v*'
+      - "typescript_v*"
 
 permissions:
   contents: read
@@ -50,11 +50,8 @@ jobs:
 
           echo "✅ Versions match"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
 
       - name: Install Dependencies
         working-directory: typescript
@@ -103,11 +100,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
 
       - name: Download Artifact
         uses: actions/download-artifact@v4

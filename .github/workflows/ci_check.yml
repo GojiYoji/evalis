@@ -31,11 +31,8 @@ jobs:
       - name: Python Setup
         uses: ./.github/actions/python-setup
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
 
       - name: Lint
         run: make lint
@@ -48,11 +45,8 @@ jobs:
       - name: Python Setup
         uses: ./.github/actions/python-setup
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+      - name: Node.js Setup
+        uses: ./.github/actions/node-setup
 
       - name: Test
         run: make test
