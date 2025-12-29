@@ -132,7 +132,7 @@ jobs:
           echo "Publishing: $TARBALL"
 
           # Publish the tarball directly
-          npm publish "$TARBALL" --access public --dry-run  # TODO: Remove --dry-run to enable actual publishing
+          npm publish "$TARBALL" --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
