@@ -59,4 +59,4 @@ For language-specific commands, see the individual language directories.
 | Package    | Release Version |
 | ---------- | --------------- |
 | python     | 0.1.0           |
-| typescript | 0.1.0           |
+| typescript | 0.1.1           |
