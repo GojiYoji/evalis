@@ -78,7 +78,7 @@ pip_lock:
 	pip-compile --generate-hashes --extra dev -o requirements.lock.txt pyproject.toml
 
 # region: real stuff ----------------------------------------------------------
-$(python_gen_dir)/grammar.py: $(GRAMMAR_FILE) generate.py
+$(python_gen_dir)/grammar.py: $(GRAMMAR_FILE) support/generate.py
 	python ../support/generate_source.py support/generate.py $(python_gen_dir)/grammar.py
 
 $(python_gen_dir)/.antlr4.touch: $(GRAMMAR_FILE) $(requirements_file)
