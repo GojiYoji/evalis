@@ -2,6 +2,8 @@
 
 A secure, user-friendly expression evaluator for TypeScript and JavaScript.
 
+> **Early Release**: This is an early release with core functionality. More features are in active development. Check the [main project](https://github.com/GojiYoji/evalis) for roadmap and updates.
+
 ## Installation
 
 ```bash
@@ -27,9 +29,9 @@ console.log(value); // 7
 
 ## Supported Operations
 
-- **Arithmetic**: `+`, `-`, `*`, `/`, `%`, `**`
+- **Arithmetic**: `+`, `-`, `*`, `/`
 - **Comparison**: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- **Logical**: `&&`, `||`, `!`
+- **Logical**: `and`, `or`, `not`
 - **Property access**: `obj.property`, `obj['key']`
 - **Array access**: `arr[0]`
 - **List comprehensions**: `[x * 2 for x in numbers]`
