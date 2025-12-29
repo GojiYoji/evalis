@@ -66,6 +66,10 @@ jobs:
 
           echo "✅ Versions match"
 
+      # Python setup required for antlr4 command (used to generate parser/lexer during build)
+      - name: Python Setup
+        uses: ./.github/actions/python-setup
+
       - name: Node.js Setup
         uses: ./.github/actions/node-setup
 
