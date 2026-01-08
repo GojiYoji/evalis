@@ -142,15 +142,11 @@ jobs:
           echo "Tarball contents:"
           tar -tzf dist/*.tar.gz | head -30
 
-      # DRY RUN: Remove the comments below to enable actual PyPI upload
-      # - name: Publish to PyPI
-      #   working-directory: python
-      #   run: |
-      #     echo "Publishing to PyPI..."
-      #     twine upload dist/*.tar.gz
-      #   env:
-      #     TWINE_USERNAME: __token__
-      #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      - name: Publish to PyPI
+        working-directory: python
+        run: |
+          echo "Publishing to PyPI using Trusted Publisher (OIDC)..."
+          twine upload dist/*.tar.gz
 
       - name: Deploy Summary
         run: |
@@ -162,11 +158,9 @@ jobs:
           echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag**: ${{ needs.pack.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "⚠️  DRY RUN MODE - Package validated but not published" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully published to PyPI using Trusted Publisher!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "To enable publishing, uncomment the 'Publish to PyPI' step" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "After publishing, install with:" >> $GITHUB_STEP_SUMMARY
+          echo "Install with:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo "pip install evalis==$VERSION" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
