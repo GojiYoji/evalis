@@ -86,42 +86,24 @@ Tag: typescript_v0.2.0
 
 ## Deployment
 
-Deployment happens automatically when a release version tag is pushed, following a pack → deploy pipeline.
+Deployment happens automatically when you create a release tag via the Tag Version workflow. The deployment follows a pack → deploy pipeline that validates, builds, and publishes the package.
 
-### NPM Deployment
+### How to Deploy a Package
 
-**Workflow**: `.github/workflows/deploy_typescript.yml`
+1. **Bump the version** (see Version Bumping section above)
+2. **Create PR and merge to main**
+3. **Run the Tag Version workflow**:
+   - Go to **Actions** → **Tag Version** → **Run workflow**
+   - Select the language (typescript or python)
+   - The workflow will create a tag like `typescript_v0.1.3` or `python_v0.1.0`
+4. **Deployment runs automatically** when the tag is pushed
 
-**Trigger**: Tag matching `typescript_v*` (e.g., `typescript_v0.1.0`)
+The deployment workflow will:
 
-**Note**: Dev versions are never tagged, so only release versions trigger this workflow.
-
-**Process**:
-
-**Job 1: Pack**
-
-1. Parse version from tag
-2. Verify version matches `package.json`
-3. Install dependencies
-4. Build package
-5. Pack tarball
-6. Upload artifact
-
-**Job 2: Deploy**
-
-1. Download artifact
-2. Publish to npm
-
-**Requirements**:
-
-- `NPM_TOKEN` secret must be configured
-- Tag must match `typescript_vX.Y.Z` format (release versions only)
-- Version in tag must match version in `package.json`
-- CI must have passed on main (checked by tag workflow)
-
-### PyPI Deployment
-
-_Coming soon_
+- Build and pack the package
+- Validate the package
+- Publish to npm (TypeScript) or PyPI (Python)
+- Create a deployment summary
 
 ## Tag Format
 

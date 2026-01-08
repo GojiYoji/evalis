@@ -14,12 +14,13 @@ python_gen_dir=src/evalis/__gen__
 .PHONY: build clean lint setup teardown test \
 	lint_pyright \
 	pip_clean pip_install pip_install_ci pip_lock \
-	get_version get_expression_version set_version
+	get_version get_expression_version set_version \
+	pack
 
 build: $(python_gen_dir)/.antlr4.touch $(python_gen_dir)/grammar.py
 
 clean:
-	@rm -rf $(python_gen_dir) ./__pycache__/ ./.pytest_cache/
+	@rm -rf $(python_gen_dir) ./__pycache__/ ./.pytest_cache/ ./dist/
 
 lint: lint_pyright lint_black lint_flake8
 
@@ -40,7 +41,14 @@ set_version:
 	@echo "Setting python package version to $${VERSION}"
 	@support/set_version.py $$VERSION
 
-prepack: LICENSE
+prepack: build LICENSE
+
+# region: packaging -----------------------------------------------------------
+pack: prepack
+	@rm -rf ./dist/
+	python -m build --sdist
+	@echo "Tarball created:"
+	@ls -1 ./dist/*.tar.gz
 
 # region: python specific linters ---------------------------------------------
 lint_pyright:

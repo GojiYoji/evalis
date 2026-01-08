@@ -1,0 +1,172 @@
+name: Pack and Deploy PyPI
+run-name: Deploy ${{ inputs.tag || github.ref_name }}
+
+on:
+  push:
+    tags:
+      - "python_v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to deploy (e.g., python_v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.parse.outputs.version }}
+      tag: ${{ steps.parse.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Parse Version from Tag
+        id: parse
+        run: |
+          # Determine tag name based on trigger type
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ inputs.tag }}"
+            echo "Manual trigger with tag: $TAG_NAME"
+          else
+            TAG_NAME="${{ github.ref_name }}"
+            echo "Tag push trigger: $TAG_NAME"
+          fi
+
+          # Extract version from tag (format: python_vX.Y.Z)
+          # Dev versions are never tagged, so we don't need to handle them
+          if [[ ! "$TAG_NAME" =~ ^python_v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "❌ ERROR: Invalid tag format: $TAG_NAME"
+            echo "Expected format: python_vX.Y.Z"
+            exit 1
+          fi
+
+          VERSION="${BASH_REMATCH[1]}"
+          echo "Parsed version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Verify Version Matches Package
+        run: |
+          EXPECTED_VERSION="${{ steps.parse.outputs.version }}"
+          PACKAGE_VERSION=$(make -s python_get_version)
+
+          echo "Tag version:     $EXPECTED_VERSION"
+          echo "Package version: $PACKAGE_VERSION"
+
+          if [ "$EXPECTED_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "❌ ERROR: Version mismatch!"
+            echo "Tag says $EXPECTED_VERSION but package says $PACKAGE_VERSION"
+            exit 1
+          fi
+
+          echo "✅ Versions match"
+
+      - name: Python Setup
+        uses: ./.github/actions/python-setup
+
+      - name: Prepack
+        run: make python_prepack
+
+      - name: Pack
+        id: pack
+        working-directory: python
+        run: |
+          # Create tarball
+          make pack
+          # Get the tarball name
+          TARBALL=$(ls dist/*.tar.gz | head -1)
+          echo "Created: $TARBALL"
+          echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-evalis-${{ steps.parse.outputs.version }}
+          path: python/dist/*.tar.gz
+          retention-days: 7
+
+      - name: Pack Summary
+        run: |
+          VERSION="${{ steps.parse.outputs.version }}"
+
+          echo "## Pack Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package**: evalis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: ${{ steps.parse.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Package built and uploaded as artifact" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 Proceeding to deployment..." >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    needs: pack
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/evalis
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: ./.github/actions/python-setup
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pypi-evalis-${{ needs.pack.outputs.version }}
+          path: python/dist
+
+      - name: Install Twine
+        run: pip install twine
+
+      - name: Check Package
+        working-directory: python
+        run: |
+          echo "Validating package with twine check..."
+          twine check dist/*.tar.gz
+          echo "✅ Package validation passed"
+
+      - name: List Package Contents
+        working-directory: python
+        run: |
+          echo "Package files to upload:"
+          ls -lh dist/
+          echo ""
+          echo "Tarball contents:"
+          tar -tzf dist/*.tar.gz | head -30
+
+      # DRY RUN: Remove the comments below to enable actual PyPI upload
+      # - name: Publish to PyPI
+      #   working-directory: python
+      #   run: |
+      #     echo "Publishing to PyPI..."
+      #     twine upload dist/*.tar.gz
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Deploy Summary
+        run: |
+          VERSION="${{ needs.pack.outputs.version }}"
+
+          echo "## PyPI Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package**: evalis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: ${{ needs.pack.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️  DRY RUN MODE - Package validated but not published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To enable publishing, uncomment the 'Publish to PyPI' step" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "After publishing, install with:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "pip install evalis==$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
