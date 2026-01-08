@@ -29,7 +29,7 @@ setup: $(pip_install_target)
 teardown: pip_clean
 
 test:
-	pytest
+	pytest $(ARGS)
 
 get_version:
 	@support/get_version.sh

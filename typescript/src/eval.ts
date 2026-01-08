@@ -20,6 +20,18 @@ function getValFromContext(context: any, key: any): any {
   throw new Error(`Unexpected context type in getValFromContext: ${context}`);
 }
 
+function isNullish(val: unknown): boolean {
+  return val === null || val === undefined || val === false;
+}
+
+function asString(val: unknown): string {
+  if (isNullish(val)) {
+    return '';
+  }
+
+  return String(val);
+}
+
 export class Evaluator {
   private options: EvaluatorOptions;
 
@@ -42,6 +54,12 @@ export class Evaluator {
 
       switch (binNode.op) {
         case BinaryOpType.ADD:
+          if (isNullish(left) && isNullish(right)) {
+            return null;
+          } else if (typeof left === 'string' || typeof right === 'string') {
+            return asString(left) + asString(right);
+          }
+
           return left + right;
         case BinaryOpType.AND:
           return left && right;

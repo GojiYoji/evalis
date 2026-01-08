@@ -95,10 +95,26 @@
   context:
     matrix: [[1, 2], [3, 4], [5, 6]]
   expected: [1, 3, 5]
-# TODO: We need this test to pass
-# - expr: '[message + " " + (x) for x in items]'
-#   context:
-#     a: 100,
-#     items: [1, 2, 3]
-#     message: "Hello"
-#   expected: ["Hello 100", "Hello 200", "Hello 300"]
+
+- expr: "plans['401k']"
+  context:
+    plans:
+      401k: "Hello"
+  expected: "Hello"
+
+- expr: test + "abc" + '123'
+  context: {}
+  expected: abc123
+  should_null_on_bad_access: true
+
+- expr: test + "abc" + '123'
+  context:
+    test: "Hello "
+  expected: "Hello abc123"
+
+- expr: '[message + " " + (x * a) for x in items]'
+  context:
+    a: 100
+    items: [1, 2, 3]
+    message: "Hello"
+  expected: ["Hello 100", "Hello 200", "Hello 300"]
