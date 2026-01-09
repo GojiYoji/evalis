@@ -49,7 +49,6 @@ export class Evaluator {
           // 2. String concatenation
           // 3. Numeric addition
           // 4. List concatenation
-          debugger;
           if (isNullish(left) && isNullish(right)) {
             return null;
           } else if (shouldStrConcat(left, right)) {

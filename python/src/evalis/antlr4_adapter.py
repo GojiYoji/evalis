@@ -4,7 +4,6 @@ from antlr4.error.ErrorListener import ErrorListener
 from evalis.__gen__.EvalisParser import EvalisParser
 from evalis.__gen__.EvalisLexer import EvalisLexer
 
-from evalis.error import syntax_error
 from evalis.types import SyntaxMessage
 
 

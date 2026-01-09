@@ -59,6 +59,11 @@ lint_prettier:
 	@npm run format:check
 	@echo "[prettier:OK] --------------"
 
+lint_prettier_write:
+	@echo "[prettier_write] -----------------"
+	@npm run format
+	@echo "[prettier_write:OK] --------------"
+
 # region: npm stuff -----------------------------------------------------------
 npm_clean:
 	rm -rf node_modules package-lock.json
