@@ -11,7 +11,19 @@ with TEST_ORACLE_YML.open("r", encoding="utf-8") as f:
     TEST_CASES = yaml.safe_load(f)
 
 
-@pytest.mark.parametrize("test_case", TEST_CASES)
+def describe_test_case(test_case):
+    expr = test_case.get("expr", None)
+    desc = test_case.get("description", None)
+
+    if desc:
+        return f"test for: {desc}"
+    if expr:
+        return f"test for expression: {test_case.get("expr")}"
+
+    return ""
+
+
+@pytest.mark.parametrize("test_case", TEST_CASES, ids=describe_test_case)
 def test_evaluate_expression(test_case):
     expr = test_case["expr"]
     context = test_case.get("context", {})

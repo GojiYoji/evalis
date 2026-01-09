@@ -10,7 +10,7 @@ export function shouldStrConcat(left: unknown, right: unknown): boolean {
   // We know at least one of them is a string here, let's check the other one
   const valOther = typeof left === 'string' ? right : left;
 
-  if (typeof valOther === 'object' || Array.isArray(valOther)) {
+  if (!isPrimitive(valOther)) {
     return false;
   }
 

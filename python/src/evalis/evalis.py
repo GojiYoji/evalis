@@ -4,7 +4,12 @@ from evalis.antlr4_adapter import parse_expression_tree
 from evalis.ast import AstBuilder, EvalisNode
 from evalis.error import syntax_error
 from evalis.eval import Evaluator
-from evalis.types import EvaluatorOptions, ParseResult
+from evalis.types import (
+    EvaluatorOptions,
+    ParseResult,
+    ParseResultError,
+    ParseResultSuccess,
+)
 
 
 def parse_ast(expression: str) -> ParseResult:
@@ -19,11 +24,11 @@ def parse_ast(expression: str) -> ParseResult:
     tree, errors = parse_expression_tree(expression)
 
     if errors:
-        return ParseResult(ast=None, errors=errors)
+        return ParseResultError(ast=None, errors=errors)
 
     builder = AstBuilder()
     ast = builder.visit(tree)
-    return ParseResult(ast=ast, errors=None)
+    return ParseResultSuccess(ast=ast, errors=None)
 
 
 def evaluate_ast(
@@ -49,7 +54,7 @@ def evaluate_expression(
     """
     result = parse_ast(expression)
 
-    if result.errors:
+    if isinstance(result, ParseResultError):
         raise syntax_error(result.errors)
 
     return evaluate_ast(result.ast, context, options)

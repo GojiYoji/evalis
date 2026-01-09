@@ -7,9 +7,9 @@ def should_str_concat(left: Any, right: Any) -> bool:
         return False
 
     # We know at least one of them is a str here, let's check the other one
-    val_str, val_other = (left, right) if isinstance(left, str) else (right, left)
+    val_other = right if isinstance(left, str) else left
 
-    if isinstance(val_other, dict) or isinstance(val_other, list):
+    if not is_primitive(val_other):
         return False
 
     return True
