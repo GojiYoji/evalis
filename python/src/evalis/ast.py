@@ -66,6 +66,14 @@ class AstBuilder(BaseEvalisVisitor):
     def visitLiteralAtom(self, ctx):
         return self.visit(ctx.literal())
 
+    # Visit a parse tree produced by EvalisParser#literal.
+    def visitLiteral(self, ctx: EvalisParser.LiteralContext):
+        # Check if it's null
+        if ctx.getText() == "null":
+            return LiteralNode(None)
+        # Otherwise delegate to specific literal type visitors
+        return self.visitChildren(ctx)
+
     # Visit a parse tree produced by EvalisParser#ParenAtom.
     def visitParenAtom(self, ctx):
         return self.visit(ctx.expr())

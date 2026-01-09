@@ -8,6 +8,8 @@ import {
   ListComprehensionNode,
   EvaluatorOptions,
 } from './types';
+import { EvalisError, CODE_TYPE_ERROR } from './error';
+import { isNullish, shouldStrConcat, isPrimitive, asString } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getValFromContext(context: any, key: any): any {
@@ -18,18 +20,6 @@ function getValFromContext(context: any, key: any): any {
     return context[key];
   }
   throw new Error(`Unexpected context type in getValFromContext: ${context}`);
-}
-
-function isNullish(val: unknown): boolean {
-  return val === null || val === undefined || val === false;
-}
-
-function asString(val: unknown): string {
-  if (isNullish(val)) {
-    return '';
-  }
-
-  return String(val);
 }
 
 export class Evaluator {
@@ -54,13 +44,25 @@ export class Evaluator {
 
       switch (binNode.op) {
         case BinaryOpType.ADD:
+          // There are only a few types of legal additions:
+          // 1. null + null (or undefined)
+          // 2. String concatenation
+          // 3. Numeric addition
+          // 4. List concatenation
           if (isNullish(left) && isNullish(right)) {
             return null;
-          } else if (typeof left === 'string' || typeof right === 'string') {
+          } else if (shouldStrConcat(left, right)) {
             return asString(left) + asString(right);
+          } else if (isPrimitive(left) && isPrimitive(right)) {
+            return left + right;
+          } else if (Array.isArray(left) && Array.isArray(right)) {
+            return left.concat(right);
+          } else {
+            throw new EvalisError(
+              `Cannot use + operator with types ${typeof left} and ${typeof right}`,
+              CODE_TYPE_ERROR
+            );
           }
-
-          return left + right;
         case BinaryOpType.AND:
           return left && right;
         case BinaryOpType.DIVIDE:

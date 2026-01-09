@@ -118,3 +118,57 @@
     items: [1, 2, 3]
     message: "Hello"
   expected: ["Hello 100", "Hello 200", "Hello 300"]
+
+- expr: false + "abc"
+  context: {}
+  expected: "falseabc"
+
+- expr: 0 + "abc"
+  context: {}
+  expected: "0abc"
+
+- expr: val + "abc"
+  context:
+    val: [1, 2, 3]
+  expected_error: "Cannot use \\+ operator with types"
+
+- expr: val + val
+  context:
+    val: [1, 2, 3]
+  expected: [1, 2, 3, 1, 2, 3]
+
+# Boolean to string coercion
+- expr: true + " test"
+  context: {}
+  expected: "true test"
+
+# Null handling
+- expr: null + null
+  context: {}
+  expected: null
+
+- expr: null + "test"
+  context: {}
+  expected: "test"
+
+- expr: '"test" + null'
+  context: {}
+  expected: "test"
+
+# Dict/object + string should error
+- expr: obj + "test"
+  context:
+    obj:
+      foo: "bar"
+  expected_error: "Cannot use \\+ operator with types"
+
+# String + array (reverse order, should also error)
+- expr: '"test" + arr'
+  context:
+    arr: [1, 2, 3]
+  expected_error: "Cannot use \\+ operator with types"
+
+# Syntax error (tests parseAst error handling)
+- expr: "1 +"
+  context: {}
+  expected_error: "Syntax errors"

@@ -3,6 +3,22 @@ from typing import Any
 from evalis.__gen__.grammar import BinaryOpType, UnaryOpType
 
 
+# region: parse result --------------------------------------------------------
+@dataclass(frozen=True)
+class ParseResultSuccess:
+    ast: "EvalisNode"
+    errors: None
+
+
+@dataclass(frozen=True)
+class ParseResultError:
+    ast: None
+    errors: "tuple[SyntaxMessage, ...]"
+
+
+type ParseResult = ParseResultSuccess | ParseResultError
+
+
 # region: ast nodes -----------------------------------------------------------
 @dataclass(frozen=True)
 class ReferenceNode:

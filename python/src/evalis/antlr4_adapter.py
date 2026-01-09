@@ -4,7 +4,6 @@ from antlr4.error.ErrorListener import ErrorListener
 from evalis.__gen__.EvalisParser import EvalisParser
 from evalis.__gen__.EvalisLexer import EvalisLexer
 
-from evalis.error import syntax_error
 from evalis.types import SyntaxMessage
 
 
@@ -21,7 +20,16 @@ class SyntaxErrorCollector(ErrorListener):
         self.errors.append(error)
 
 
-def parse_expression_tree(expression: str) -> EvalisParser.ParseContext:
+def parse_expression_tree(
+    expression: str,
+) -> tuple[EvalisParser.ParseContext | None, tuple[SyntaxMessage, ...]]:
+    """Parse expression and return (tree, errors).
+
+    Returns:
+        (tree, errors) where:
+        - tree is the parse tree if successful, None otherwise
+        - errors is tuple of SyntaxMessages if any, empty tuple otherwise
+    """
     input_stream = InputStream(expression)
     lexer = EvalisLexer(input_stream)
     stream = CommonTokenStream(lexer)
@@ -33,6 +41,6 @@ def parse_expression_tree(expression: str) -> EvalisParser.ParseContext:
     tree = parser.parse()
 
     if error_collector.errors:
-        raise syntax_error(error_collector.errors)
+        return (None, tuple(error_collector.errors))
 
-    return tree
+    return (tree, ())

@@ -36,6 +36,13 @@ print(value)  # 7
 - **Array access**: `arr[0]`
 - **List comprehensions**: `[x * 2 for x in numbers]`
 - **Membership**: `x in collection`
+- **String literals**: Both `'single'` and `"double"` quotes supported
+
+**Note on `+` operator:**
+- Numbers: `5 + 3` → `8`
+- Strings: `"hello" + "world"` → `"helloworld"` (coerces primitives to string)
+- Arrays: `[1, 2] + [3, 4]` → `[1, 2, 3, 4]`
+- Mixed types (list + string) will raise `EvalisError`
 
 ## API Reference
 
