@@ -7,6 +7,7 @@ interface TestCase {
   expr: string;
   context?: unknown;
   expected: unknown;
+  should_null_on_bad_access?: boolean;
 }
 
 describe('Evalis Test Cases', () => {
@@ -16,7 +17,10 @@ describe('Evalis Test Cases', () => {
 
   testCases.forEach((testCase) => {
     it(`should evaluate: ${testCase.expr}`, () => {
-      const result = evaluateExpression(testCase.expr, testCase.context || {});
+      const result = evaluateExpression(testCase.expr, testCase.context || {}, {
+        shouldNullOnBadAccess: testCase.should_null_on_bad_access || false,
+      });
+
       expect(result).toEqual(testCase.expected);
     });
   });

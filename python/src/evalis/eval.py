@@ -20,6 +20,13 @@ def get_val_from_context(context: Any, key: Any) -> Any:
         raise ValueError(f"Unexpected context type in get_val_from_context: {context}")
 
 
+def as_str(val: Any) -> str:
+    if val is None:
+        return ""
+
+    return str(val)
+
+
 class Evaluator:
     _options: EvaluatorOptions
 
@@ -35,7 +42,12 @@ class Evaluator:
 
             match (node.op):
                 case BinaryOpType.ADD:
-                    return left + right
+                    if left is None and right is None:
+                        return None
+                    elif isinstance(left, str) or isinstance(right, str):
+                        return as_str(left) + as_str(right)
+                    else:
+                        return left + right
                 case BinaryOpType.AND:
                     return left and right
                 case BinaryOpType.DIVIDE:
