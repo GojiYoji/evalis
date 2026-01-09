@@ -15,15 +15,24 @@ with TEST_ORACLE_YML.open("r", encoding="utf-8") as f:
 def test_evaluate_expression(test_case):
     expr = test_case["expr"]
     context = test_case.get("context", {})
-    expected = test_case["expected"]
+    expected = test_case.get("expected", None)
+    expected_error = test_case.get("expected_error", None)
     should_null_on_bad_access = test_case.get("should_null_on_bad_access", False)
 
-    result = evaluate_expression(
-        expr,
-        context,
-        EvaluatorOptions(should_null_on_bad_access=should_null_on_bad_access),
-    )
+    def act():
+        return evaluate_expression(
+            expr,
+            context,
+            EvaluatorOptions(should_null_on_bad_access=should_null_on_bad_access),
+        )
 
-    assert (
-        result == expected
-    ), f"Failed expr: {expr} with context: {context}, got {result}"
+    if expected_error:
+        with pytest.raises(Exception, match=expected_error):
+            act()
+
+    else:
+        result = act()
+
+        assert (
+            result == expected
+        ), f"Failed expr: {expr} with context: {context}, got {result}"

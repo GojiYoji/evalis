@@ -8,7 +8,9 @@ from evalis.ast import (
     UnaryOpType,
     ListComprehensionNode,
 )
+from evalis.error import EvalisError, CODE_TYPE_ERROR
 from evalis.types import EvaluatorOptions
+from evalis.utils import as_str, is_primitive, should_str_concat
 
 
 def get_val_from_context(context: Any, key: Any) -> Any:
@@ -18,13 +20,6 @@ def get_val_from_context(context: Any, key: Any) -> Any:
         return context[key]
     else:
         raise ValueError(f"Unexpected context type in get_val_from_context: {context}")
-
-
-def as_str(val: Any) -> str:
-    if val is None:
-        return ""
-
-    return str(val)
 
 
 class Evaluator:
@@ -42,12 +37,24 @@ class Evaluator:
 
             match (node.op):
                 case BinaryOpType.ADD:
+                    # There are only a few type of legal additions:
+                    # 1. null + null
+                    # 2. String concatenation
+                    # 3. Numeric addition
+                    # 4. List concatenation
                     if left is None and right is None:
                         return None
-                    elif isinstance(left, str) or isinstance(right, str):
+                    elif should_str_concat(left, right):
                         return as_str(left) + as_str(right)
-                    else:
+                    elif is_primitive(left) and is_primitive(right):
                         return left + right
+                    elif isinstance(left, list) and isinstance(right, list):
+                        return left + right
+                    else:
+                        raise EvalisError(
+                            f"Cannot use + operator with types {type(left)} and {type(right)}",
+                            CODE_TYPE_ERROR,
+                        )
                 case BinaryOpType.AND:
                     return left and right
                 case BinaryOpType.DIVIDE:

@@ -5,6 +5,7 @@ from evalis.types import SyntaxMessage
 
 CODE_UNKNOWN = "UNKNOWN"
 CODE_SYNTAX_ERROR = "SYNTAX_ERROR"
+CODE_TYPE_ERROR = "TYPE_ERROR"
 
 
 class EvalisError(Exception):

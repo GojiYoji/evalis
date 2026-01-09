@@ -9,6 +9,7 @@ import EvalisParser from './__gen__/EvalisParser';
 import { AstBuilder } from './ast';
 import { Evaluator } from './eval';
 import { EvalisNode, EvaluatorOptions, SyntaxMessage } from './types';
+import { syntaxError } from './error';
 
 class SyntaxErrorCollector implements ErrorListener<unknown> {
   errors: SyntaxMessage[] = [];
@@ -24,10 +25,20 @@ class SyntaxErrorCollector implements ErrorListener<unknown> {
   }
 }
 
-export function parseAst(expression: string): {
-  ast: EvalisNode | null;
-  errors: SyntaxMessage[];
-} {
+export type ParseAstReturn =
+  | { ast: EvalisNode; errors: null }
+  | { ast: null; errors: SyntaxMessage[] };
+
+/**
+ * Parse expression and return result with ast or errors.
+ *
+ * Does NOT throw - returns a result object that contains either:
+ * - ast: The parsed AST node
+ * - errors: Array of syntax errors
+ *
+ * For simple use cases, use evaluateExpression() which throws on errors.
+ */
+export function parseAst(expression: string): ParseAstReturn {
   const errorCollector = new SyntaxErrorCollector();
 
   const inputStream = new CharStream(expression);
@@ -49,7 +60,7 @@ export function parseAst(expression: string): {
   const builder = new AstBuilder();
   const ast = builder.visit(tree);
 
-  return { ast, errors: [] };
+  return { ast, errors: null };
 }
 
 export function evaluateAst(
@@ -61,6 +72,12 @@ export function evaluateAst(
   return evaluator.evaluate(node, context);
 }
 
+/**
+ * Evaluate expression and return result.
+ *
+ * Throws EvalisError if there are syntax errors.
+ * For non-throwing parse, use parseAst() directly.
+ */
 export function evaluateExpression(
   expression: string,
   context: unknown = {},
@@ -68,12 +85,8 @@ export function evaluateExpression(
 ): unknown {
   const { ast, errors } = parseAst(expression);
 
-  if (errors.length > 0) {
-    throw new Error(`Syntax errors: ${JSON.stringify(errors)}`);
-  }
-
   if (!ast) {
-    throw new Error('Failed to parse expression');
+    throw syntaxError(errors);
   }
 
   return evaluateAst(ast, context, options);

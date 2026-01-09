@@ -63,6 +63,9 @@ Expression String
 - **Array access**: `arr[0]`
 - **List comprehensions**: `[x * 2 for x in numbers]`
 - **Membership**: `x in collection`
+- **String literals**: Both `'single'` and `"double"` quotes
+
+The `+` operator handles numbers, strings (with coercion), and arrays. Mixed types error.
 
 ## Build System
 

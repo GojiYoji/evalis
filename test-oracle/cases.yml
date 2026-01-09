@@ -118,3 +118,21 @@
     items: [1, 2, 3]
     message: "Hello"
   expected: ["Hello 100", "Hello 200", "Hello 300"]
+
+- expr: false + "abc"
+  context: {}
+  expected: "falseabc"
+
+- expr: 0 + "abc"
+  context: {}
+  expected: "0abc"
+
+- expr: val + "abc"
+  context:
+    val: [1, 2, 3]
+  expected_error: "Cannot use \\+ operator with types"
+
+- expr: val + val
+  context:
+    val: [1, 2, 3]
+  expected: [1, 2, 3, 1, 2, 3]

@@ -6,7 +6,8 @@ import { evaluateExpression } from '../src/evalis';
 interface TestCase {
   expr: string;
   context?: unknown;
-  expected: unknown;
+  expected?: unknown;
+  expected_error?: string;
   should_null_on_bad_access?: boolean;
 }
 
@@ -16,12 +17,25 @@ describe('Evalis Test Cases', () => {
   const testCases = yaml.load(testCasesYaml) as TestCase[];
 
   testCases.forEach((testCase) => {
-    it(`should evaluate: ${testCase.expr}`, () => {
-      const result = evaluateExpression(testCase.expr, testCase.context || {}, {
-        shouldNullOnBadAccess: testCase.should_null_on_bad_access || false,
-      });
+    const {
+      expr,
+      context = {},
+      expected,
+      expected_error: expectedError,
+      should_null_on_bad_access: shouldNullOnBadAccess,
+    } = testCase;
 
-      expect(result).toEqual(testCase.expected);
-    });
+    const act = () =>
+      evaluateExpression(expr, context, { shouldNullOnBadAccess });
+
+    if (expectedError) {
+      it(`should error: ${expr}`, () => {
+        expect(act).toThrow(new RegExp(expectedError));
+      });
+    } else {
+      it(`should evaluate: ${expr}`, () => {
+        expect(act()).toEqual(expected);
+      });
+    }
   });
 });

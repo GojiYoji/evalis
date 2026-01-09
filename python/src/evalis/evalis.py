@@ -2,15 +2,28 @@ from typing import Any
 
 from evalis.antlr4_adapter import parse_expression_tree
 from evalis.ast import AstBuilder, EvalisNode
+from evalis.error import syntax_error
 from evalis.eval import Evaluator
-from evalis.types import EvaluatorOptions
+from evalis.types import EvaluatorOptions, ParseResult
 
 
-def parse_ast(expression: str) -> EvalisNode:
-    tree = parse_expression_tree(expression)
+def parse_ast(expression: str) -> ParseResult:
+    """Parse expression and return ParseResult with ast or errors.
+
+    Does NOT throw - returns a result object that contains either:
+    - ast: The parsed AST node
+    - errors: Tuple of syntax errors
+
+    For simple use cases, use evaluate_expression() which throws on errors.
+    """
+    tree, errors = parse_expression_tree(expression)
+
+    if errors:
+        return ParseResult(ast=None, errors=errors)
 
     builder = AstBuilder()
-    return builder.visit(tree)
+    ast = builder.visit(tree)
+    return ParseResult(ast=ast, errors=None)
 
 
 def evaluate_ast(
@@ -29,6 +42,14 @@ def evaluate_expression(
     context: dict[str, Any] = {},
     options: EvaluatorOptions = EvaluatorOptions(),
 ) -> Any:
-    ast = parse_ast(expression)
+    """Evaluate expression and return result.
 
-    return evaluate_ast(ast, context, options)
+    Throws EvalisError if there are syntax errors.
+    For non-throwing parse, use parse_ast() directly.
+    """
+    result = parse_ast(expression)
+
+    if result.errors:
+        raise syntax_error(result.errors)
+
+    return evaluate_ast(result.ast, context, options)
