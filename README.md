@@ -58,5 +58,5 @@ For language-specific commands, see the individual language directories.
 
 | Package    | Release Version |
 | ---------- | --------------- |
-| python     | 0.1.1           |
-| typescript | 0.1.3           |
+| python     | 0.2.0           |
+| typescript | 0.2.0           |
