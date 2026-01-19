@@ -172,3 +172,16 @@
 - expr: "1 +"
   context: {}
   expected_error: "Syntax errors"
+
+# Pass through on boolean value
+- expr: "(not has_default_list) and backup_list"
+  context:
+    has_default_list: true
+    backup_list: [1, 2, 3]
+  expected: false
+
+- expr: "(not has_default_list) and backup_list"
+  context:
+    has_default_list: false
+    backup_list: [1, 2, 3]
+  expected: [1, 2, 3]
