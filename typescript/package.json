@@ -1,6 +1,6 @@
 {
   "name": "evalis",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A polyglot, secure, user-friendly expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -26,3 +26,15 @@ def as_str(val: Any) -> str:
         return ""
 
     return str(val)
+
+
+def is_numeric_or_null(val: Any) -> bool:
+    """Check if a value is numeric or null."""
+    return val is None or isinstance(val, (int, float))
+
+
+def as_num(val: Any) -> Any:
+    """Coerce nullish values to 0 for numeric operations."""
+    if val is None:
+        return 0
+    return val

@@ -9,7 +9,14 @@ import {
   EvaluatorOptions,
 } from './types';
 import { EvalisError, CODE_TYPE_ERROR } from './error';
-import { isNullish, shouldStrConcat, isPrimitive, asString } from './utils';
+import {
+  isNullish,
+  shouldStrConcat,
+  isPrimitive,
+  asString,
+  isNumericOrNull,
+  asNum,
+} from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getValFromContext(context: any, key: any): any {
@@ -72,13 +79,49 @@ export class Evaluator {
         case BinaryOpType.EQUALS:
           return left === right;
         case BinaryOpType.GT:
-          return left > right;
+          if (isNumericOrNull(left) && isNumericOrNull(right)) {
+            return asNum(left) > asNum(right);
+          }
+          if (typeof left === 'string' && typeof right === 'string') {
+            return left > right;
+          }
+          throw new EvalisError(
+            `Cannot use > operator with types ${typeof left} and ${typeof right}`,
+            CODE_TYPE_ERROR
+          );
         case BinaryOpType.GTE:
-          return left >= right;
+          if (isNumericOrNull(left) && isNumericOrNull(right)) {
+            return asNum(left) >= asNum(right);
+          }
+          if (typeof left === 'string' && typeof right === 'string') {
+            return left >= right;
+          }
+          throw new EvalisError(
+            `Cannot use >= operator with types ${typeof left} and ${typeof right}`,
+            CODE_TYPE_ERROR
+          );
         case BinaryOpType.LT:
-          return left < right;
+          if (isNumericOrNull(left) && isNumericOrNull(right)) {
+            return asNum(left) < asNum(right);
+          }
+          if (typeof left === 'string' && typeof right === 'string') {
+            return left < right;
+          }
+          throw new EvalisError(
+            `Cannot use < operator with types ${typeof left} and ${typeof right}`,
+            CODE_TYPE_ERROR
+          );
         case BinaryOpType.LTE:
-          return left <= right;
+          if (isNumericOrNull(left) && isNumericOrNull(right)) {
+            return asNum(left) <= asNum(right);
+          }
+          if (typeof left === 'string' && typeof right === 'string') {
+            return left <= right;
+          }
+          throw new EvalisError(
+            `Cannot use <= operator with types ${typeof left} and ${typeof right}`,
+            CODE_TYPE_ERROR
+          );
         case BinaryOpType.MULTIPLY:
           return left * right;
         case BinaryOpType.OR:

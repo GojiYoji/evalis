@@ -67,6 +67,8 @@ Expression String
 
 The `+` operator handles numbers, strings (with coercion), and arrays. Mixed types error.
 
+Comparison operators (`<`, `>`, `<=`, `>=`) coerce `null` to `0` for numeric comparisons. String comparisons work lexicographically. Mixed type comparisons (e.g., `5 > "hello"`) throw an error.
+
 ## Build System
 
 The repository uses Makefiles to provide a consistent build interface across languages:
