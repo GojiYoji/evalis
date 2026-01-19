@@ -185,3 +185,57 @@
     has_default_list: false
     backup_list: [1, 2, 3]
   expected: [1, 2, 3]
+
+# Null coercion for numeric comparisons
+- expr: "dne.val > 2"
+  context: {}
+  expected: false
+  should_null_on_bad_access: true
+
+- expr: "dne.val < 2"
+  context: {}
+  expected: true
+  should_null_on_bad_access: true
+
+- expr: "dne.val >= 0"
+  context: {}
+  expected: true
+  should_null_on_bad_access: true
+
+- expr: "dne.val <= 0"
+  context: {}
+  expected: true
+  should_null_on_bad_access: true
+
+- expr: "2 > dne.val"
+  context: {}
+  expected: true
+  should_null_on_bad_access: true
+
+- expr: "dne.a > dne.b"
+  context: {}
+  expected: false
+  should_null_on_bad_access: true
+
+# String comparisons still work
+- expr: '"b" > "a"'
+  context: {}
+  expected: true
+
+- expr: '"apple" < "banana"'
+  context: {}
+  expected: true
+
+- expr: 'name >= "Alice"'
+  context:
+    name: "Bob"
+  expected: true
+
+# Mixed type comparisons should error
+- expr: '5 > "hello"'
+  context: {}
+  expected_error: "Cannot use > operator with types"
+
+- expr: '"hello" < 10'
+  context: {}
+  expected_error: "Cannot use < operator with types"

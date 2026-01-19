@@ -39,3 +39,14 @@ export function asString(val: unknown): string {
 
   return String(val);
 }
+
+export function isNumericOrNull(val: unknown): boolean {
+  return isNullish(val) || typeof val === 'number';
+}
+
+export function asNum(val: unknown): number {
+  if (isNullish(val)) {
+    return 0;
+  }
+  return val as number;
+}

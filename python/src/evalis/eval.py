@@ -10,7 +10,13 @@ from evalis.ast import (
 )
 from evalis.error import EvalisError, CODE_TYPE_ERROR
 from evalis.types import EvaluatorOptions
-from evalis.utils import as_str, is_primitive, should_str_concat
+from evalis.utils import (
+    as_str,
+    is_primitive,
+    should_str_concat,
+    as_num,
+    is_numeric_or_null,
+)
 
 
 def get_val_from_context(context: Any, key: Any) -> Any:
@@ -64,13 +70,41 @@ class Evaluator:
                 case BinaryOpType.EQUALS:
                     return left == right
                 case BinaryOpType.GT:
-                    return left > right
+                    if is_numeric_or_null(left) and is_numeric_or_null(right):
+                        return as_num(left) > as_num(right)
+                    if isinstance(left, str) and isinstance(right, str):
+                        return left > right
+                    raise EvalisError(
+                        f"Cannot use > operator with types {type(left).__name__} and {type(right).__name__}",
+                        CODE_TYPE_ERROR,
+                    )
                 case BinaryOpType.GTE:
-                    return left >= right
+                    if is_numeric_or_null(left) and is_numeric_or_null(right):
+                        return as_num(left) >= as_num(right)
+                    if isinstance(left, str) and isinstance(right, str):
+                        return left >= right
+                    raise EvalisError(
+                        f"Cannot use >= operator with types {type(left).__name__} and {type(right).__name__}",
+                        CODE_TYPE_ERROR,
+                    )
                 case BinaryOpType.LT:
-                    return left < right
+                    if is_numeric_or_null(left) and is_numeric_or_null(right):
+                        return as_num(left) < as_num(right)
+                    if isinstance(left, str) and isinstance(right, str):
+                        return left < right
+                    raise EvalisError(
+                        f"Cannot use < operator with types {type(left).__name__} and {type(right).__name__}",
+                        CODE_TYPE_ERROR,
+                    )
                 case BinaryOpType.LTE:
-                    return left <= right
+                    if is_numeric_or_null(left) and is_numeric_or_null(right):
+                        return as_num(left) <= as_num(right)
+                    if isinstance(left, str) and isinstance(right, str):
+                        return left <= right
+                    raise EvalisError(
+                        f"Cannot use <= operator with types {type(left).__name__} and {type(right).__name__}",
+                        CODE_TYPE_ERROR,
+                    )
                 case BinaryOpType.MULTIPLY:
                     return left * right
                 case BinaryOpType.OR:
