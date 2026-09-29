@@ -2,6 +2,7 @@ import { BinaryOpType, UnaryOpType } from './__gen__/grammar';
 import {
   EvalisNode,
   BinaryOpNode,
+  TernaryNode,
   UnaryOpNode,
   ReferenceNode,
   LiteralNode,
@@ -135,6 +136,13 @@ export class Evaluator {
         default:
           throw new Error(`Unexpected binary op found: ${binNode.op}`);
       }
+    }
+
+    if (nodeType === 'ternary') {
+      const ternaryNode = node as TernaryNode;
+      const condition = this.evaluate(ternaryNode.condition, context);
+      const branch = condition ? ternaryNode.ifTrue : ternaryNode.ifFalse;
+      return this.evaluate(branch, context);
     }
 
     if (nodeType === 'unaryOp') {

@@ -20,6 +20,13 @@ export interface BinaryOpNode {
   right: EvalisNode;
 }
 
+export interface TernaryNode {
+  type: 'ternary';
+  condition: EvalisNode;
+  ifTrue: EvalisNode;
+  ifFalse: EvalisNode;
+}
+
 export interface LiteralNode {
   type: 'literal';
   value: unknown;
@@ -48,6 +55,7 @@ export type EvalisNode =
   | ReferenceNode
   | UnaryOpNode
   | BinaryOpNode
+  | TernaryNode
   | LiteralNode
   | ListComprehensionNode
   | SliceNode

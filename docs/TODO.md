@@ -65,7 +65,6 @@ This document outlines the roadmap, priorities, and future enhancements for Eval
 - [ ] **Modulo operator** (`%`)
 - [ ] **Exponentiation** (`**` or `^`)
 - [ ] **String concatenation** (explicit operator or implicit)
-- [ ] **Ternary conditional** (`x if condition else y`)
 
 ### Built-in Functions
 

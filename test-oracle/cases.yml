@@ -62,6 +62,78 @@
 - expr: (5 > 10) == false
   expected: true
 
+# Ternary expression tests
+- expr: "is_active ? 'active' : 'inactive'"
+  context:
+    is_active: true
+  expected: "active"
+
+- expr: "is_active ? 'active' : 'inactive'"
+  context:
+    is_active: false
+  expected: "inactive"
+
+- expr: "score >= 70 ? 'pass' : 'fail'"
+  context:
+    score: 82
+  expected: "pass"
+
+- expr: "score >= 70 ? 'pass' : 'fail'"
+  context:
+    score: 65
+  expected: "fail"
+
+- expr: "include_bonus ? base + bonus : base"
+  context:
+    include_bonus: true
+    base: 100
+    bonus: 25
+  expected: 125
+
+- expr: "include_bonus ? base + bonus : base"
+  context:
+    include_bonus: false
+    base: 100
+    bonus: 25
+  expected: 100
+
+- expr: "status == 'vip' ? discount : 0"
+  context:
+    status: "vip"
+    discount: 15
+  expected: 15
+
+- expr: "a ? b ? 'both' : 'a-only' : 'none'"
+  context:
+    a: true
+    b: false
+  expected: "a-only"
+
+- expr: "false or true ? 'yes' : 'no'"
+  context: {}
+  expected: "yes"
+
+- expr: "false ? 'bad' : true ? 'good' : 'bad'"
+  context: {}
+  expected: "good"
+
+- expr: "[x > 0 ? x : 0 for x in values]"
+  context:
+    values: [-1, 0, 2]
+  expected: [0, 0, 2]
+
+- expr: "use_default ? [1, 2] : items"
+  context:
+    use_default: true
+    items: [3, 4]
+  expected: [1, 2]
+
+- expr: "use_default ? [1, 2] : items"
+  context:
+    use_default: false
+    items: [3, 4]
+  expected: [3, 4]
+
 - expr: ("foo" in items) and all_good
   context:
     all_good: true

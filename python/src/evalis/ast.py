@@ -3,6 +3,7 @@ from evalis.__gen__.EvalisParser import EvalisParser
 from .types import (
     BinaryOpNode,
     BinaryOpType,
+    TernaryNode,
     UnaryOpNode,
     UnaryOpType,
     LiteralNode,
@@ -146,6 +147,14 @@ class AstBuilder(BaseEvalisVisitor):
             op=BinaryOpType.IN,
             left=self.visit(ctx.expr(0)),
             right=self.visit(ctx.expr(1)),
+        )
+
+    # Visit a parse tree produced by EvalisParser#TernaryExpr.
+    def visitTernaryExpr(self, ctx: EvalisParser.TernaryExprContext):
+        return TernaryNode(
+            condition=self.visit(ctx.expr(0)),
+            if_true=self.visit(ctx.expr(1)),
+            if_false=self.visit(ctx.expr(2)),
         )
 
     # Visit a parse tree produced by EvalisParser#number.

@@ -187,6 +187,7 @@ Define types/classes/structs for:
 - `ReferenceNode` - Property/variable access
 - `UnaryOpNode` - Single-operand operations
 - `BinaryOpNode` - Two-operand operations
+- `TernaryNode` - Conditional expressions
 - `LiteralNode` - Constants
 - `ListComprehensionNode` - List comprehensions
 - `SliceNode` - Array slicing
@@ -212,6 +213,7 @@ See `python/src/evalis/ast.py` for reference.
 Implement recursive evaluation of AST nodes:
 
 - Handle all operator types
+- Support ternary conditionals
 - Support property/array access
 - Support array slicing
 - Support list literals

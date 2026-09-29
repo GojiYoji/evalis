@@ -38,6 +38,9 @@ expr
     // OR
     | expr op='or' expr                      # OrExpr
 
+    // Ternary conditional
+    | <assoc=right> expr '?' expr ':' expr   # TernaryExpr
+
     // Atom: literals, identifiers, parens
     | atom                                   # AtomExpr
     ;

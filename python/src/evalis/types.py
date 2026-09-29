@@ -40,6 +40,13 @@ class BinaryOpNode:
 
 
 @dataclass(frozen=True)
+class TernaryNode:
+    condition: Any
+    if_true: Any
+    if_false: Any
+
+
+@dataclass(frozen=True)
 class LiteralNode:
     value: Any
 
@@ -67,6 +74,7 @@ EvalisNode = (
     ReferenceNode
     | UnaryOpNode  # noqa: W503
     | BinaryOpNode  # noqa: W503
+    | TernaryNode  # noqa: W503
     | LiteralNode  # noqa: W503
     | ListComprehensionNode  # noqa: W503
     | SliceNode  # noqa: W503
