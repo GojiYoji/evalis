@@ -24,7 +24,7 @@ __version__ = "{version}"
 
 
 # Evalis expression version that this package supports
-EXPRESSION_VERSION = \"0.1.1\"
+EXPRESSION_VERSION = \"0.2.0\"
 """
         )
 
