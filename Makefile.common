@@ -1,3 +1,7 @@
 # region: vars and stuff ------------------------------------------------------
 ROOT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 GRAMMAR_FILE := $(ROOT_DIR)/grammar/Evalis.g4
+
+# antlr4-tools tries to discover the latest ANTLR version over the network when
+# this is unset. Pin it so CI and local builds are deterministic.
+export ANTLR4_TOOLS_ANTLR_VERSION := 4.13.2

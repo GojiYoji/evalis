@@ -1,1 +1,1 @@
-export const EXPRESSION_VERSION = '0.1.1';
+export const EXPRESSION_VERSION = '0.2.0';

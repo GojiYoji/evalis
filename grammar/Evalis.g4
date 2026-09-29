@@ -1,7 +1,7 @@
 // IMPORTANT! These comments are special and help generate code. If the grammar
 // changes, please also change these lines as needed.
 //
-// VERSION: 0.1.1
+// VERSION: 0.2.0
 // RESERVED_WORDS: not, and, or, null, true, false, in, for
 // BINARY_OPS: MULTIPLY *, DIVIDE /, ADD +, SUBTRACT -, LT <, LTE <=, GT >, GTE >=, EQUALS ==, NOT_EQUALS !=, AND and, OR or, IN in
 // UNARY_OPS: NOT not
@@ -44,14 +44,26 @@ expr
 
 atom
     : literal                                       # LiteralAtom
+    | identifier accessSuffix* sliceSuffix          # SliceAtom
     | identifier accessSuffix*                      # IdentifierAtom
     | '(' expr ')'                                  # ParenAtom
     | '[' expr 'for' identifier 'in' expr ']'       # ListComprehension
+    | '[' exprList? ']'                             # ListLiteral
+    ;
+
+exprList
+    : expr (',' expr)* ','?
     ;
 
 accessSuffix
     : '.' identifier
     | '[' expr ']'
+    ;
+
+// TODO: Generalize suffix handling so slices can apply to any atom/expression,
+// e.g. `[x for x in items][:10]`. Today slices only apply to identifier chains.
+sliceSuffix
+    : '[' lower=expr? ':' upper=expr? ']'
     ;
 
 literal

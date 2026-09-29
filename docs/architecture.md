@@ -61,6 +61,8 @@ Expression String
 - **Logical**: `and`, `or`, `not`
 - **Property access**: `obj.property`, `obj['key']`
 - **Array access**: `arr[0]`
+- **Array slicing**: `arr[:10]`, `arr[2:5]`, `arr[8:]` (step syntax and negative indexes are not supported)
+- **List literals**: `[1, 2, 3]`, `[]`
 - **List comprehensions**: `[x * 2 for x in numbers]`
 - **Membership**: `x in collection`
 - **String literals**: Both `'single'` and `"double"` quotes
@@ -68,6 +70,8 @@ Expression String
 The `+` operator handles numbers, strings (with coercion), and arrays. Mixed types error.
 
 Comparison operators (`<`, `>`, `<=`, `>=`) coerce `null` to `0` for numeric comparisons. String comparisons work lexicographically. Mixed type comparisons (e.g., `5 > "hello"`) throw an error.
+
+Array slicing currently applies to identifier/property/index chains, such as `items[:10]` or `user.items[2:5]`. Slicing arbitrary expression results, such as `[x for x in items][:10]`, is planned but not yet supported.
 
 ## Build System
 

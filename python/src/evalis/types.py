@@ -51,8 +51,26 @@ class ListComprehensionNode:
     iterable_expr: Any
 
 
+@dataclass(frozen=True)
+class SliceNode:
+    target: Any
+    lower: Any | None
+    upper: Any | None
+
+
+@dataclass(frozen=True)
+class ListLiteralNode:
+    elements: tuple[Any, ...]
+
+
 EvalisNode = (
-    ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode | ListComprehensionNode
+    ReferenceNode
+    | UnaryOpNode  # noqa: W503
+    | BinaryOpNode  # noqa: W503
+    | LiteralNode  # noqa: W503
+    | ListComprehensionNode  # noqa: W503
+    | SliceNode  # noqa: W503
+    | ListLiteralNode  # noqa: W503
 )
 
 

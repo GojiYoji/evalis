@@ -81,7 +81,9 @@ export class AstBuilder
     return this.visit(ctx.expr());
   }
 
-  visitIdentifierAtom(ctx: Parser.IdentifierAtomContext): EvalisNode {
+  private buildReference(
+    ctx: Parser.IdentifierAtomContext | Parser.SliceAtomContext
+  ): EvalisNode {
     const baseIdentifier = ctx.identifier().getText();
     const parts: EvalisNode[] = [];
 
@@ -103,12 +105,38 @@ export class AstBuilder
     };
   }
 
+  visitIdentifierAtom(ctx: Parser.IdentifierAtomContext): EvalisNode {
+    return this.buildReference(ctx);
+  }
+
+  visitSliceAtom(ctx: Parser.SliceAtomContext): EvalisNode {
+    const suffix = ctx.sliceSuffix();
+
+    return {
+      type: 'slice',
+      target: this.buildReference(ctx),
+      lower: suffix._lower ? this.visit(suffix._lower) : null,
+      upper: suffix._upper ? this.visit(suffix._upper) : null,
+    };
+  }
+
   visitListComprehension(ctx: Parser.ListComprehensionContext): EvalisNode {
     return {
       type: 'listComprehension',
       elementExpr: this.visit(ctx.expr(0)),
       variableName: ctx.identifier().getText(),
       iterableExpr: this.visit(ctx.expr(1)),
+    };
+  }
+
+  visitListLiteral(ctx: Parser.ListLiteralContext): EvalisNode {
+    const exprList = ctx.exprList();
+
+    return {
+      type: 'listLiteral',
+      elements: exprList
+        ? exprList.expr_list().map((expr) => this.visit(expr))
+        : [],
     };
   }
 
