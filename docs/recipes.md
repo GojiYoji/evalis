@@ -190,6 +190,7 @@ Define types/classes/structs for:
 - `LiteralNode` - Constants
 - `ListComprehensionNode` - List comprehensions
 - `SliceNode` - Array slicing
+- `ListLiteralNode` - List literals
 - `EvalisNode` - Union/sum type of all nodes
 - `EvaluatorOptions` - Configuration options
 - `SyntaxMessage` - Parse error information
@@ -213,6 +214,7 @@ Implement recursive evaluation of AST nodes:
 - Handle all operator types
 - Support property/array access
 - Support array slicing
+- Support list literals
 - Implement list comprehensions
 - Respect `EvaluatorOptions`
 

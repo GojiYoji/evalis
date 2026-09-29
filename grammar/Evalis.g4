@@ -48,6 +48,11 @@ atom
     | identifier accessSuffix*                      # IdentifierAtom
     | '(' expr ')'                                  # ParenAtom
     | '[' expr 'for' identifier 'in' expr ']'       # ListComprehension
+    | '[' exprList? ']'                             # ListLiteral
+    ;
+
+exprList
+    : expr (',' expr)* ','?
     ;
 
 accessSuffix

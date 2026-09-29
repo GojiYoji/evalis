@@ -62,6 +62,7 @@ Expression String
 - **Property access**: `obj.property`, `obj['key']`
 - **Array access**: `arr[0]`
 - **Array slicing**: `arr[:10]`, `arr[2:5]`, `arr[8:]` (step syntax and negative indexes are not supported)
+- **List literals**: `[1, 2, 3]`, `[]`
 - **List comprehensions**: `[x * 2 for x in numbers]`
 - **Membership**: `x in collection`
 - **String literals**: Both `'single'` and `"double"` quotes

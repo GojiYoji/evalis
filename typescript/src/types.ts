@@ -39,13 +39,19 @@ export interface SliceNode {
   upper: EvalisNode | null;
 }
 
+export interface ListLiteralNode {
+  type: 'listLiteral';
+  elements: EvalisNode[];
+}
+
 export type EvalisNode =
   | ReferenceNode
   | UnaryOpNode
   | BinaryOpNode
   | LiteralNode
   | ListComprehensionNode
-  | SliceNode;
+  | SliceNode
+  | ListLiteralNode;
 
 // region: other types -------------------------------------------------------
 export interface EvaluatorOptions {

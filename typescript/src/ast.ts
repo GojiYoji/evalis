@@ -129,6 +129,17 @@ export class AstBuilder
     };
   }
 
+  visitListLiteral(ctx: Parser.ListLiteralContext): EvalisNode {
+    const exprList = ctx.exprList();
+
+    return {
+      type: 'listLiteral',
+      elements: exprList
+        ? exprList.expr_list().map((expr) => this.visit(expr))
+        : [],
+    };
+  }
+
   visitAddSubExpr(ctx: Parser.AddSubExprContext): EvalisNode {
     const opText = ctx._op?.text;
     if (!opText) throw new Error('Missing operator');

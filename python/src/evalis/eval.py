@@ -8,6 +8,7 @@ from evalis.ast import (
     UnaryOpType,
     ListComprehensionNode,
     SliceNode,
+    ListLiteralNode,
 )
 from evalis.error import EvalisError, CODE_TYPE_ERROR
 from evalis.types import EvaluatorOptions
@@ -148,6 +149,9 @@ class Evaluator:
                 )
 
             return target[lower:upper]
+
+        if isinstance(node, ListLiteralNode):
+            return [self.evaluate(element, context) for element in node.elements]
 
         if isinstance(node, ListComprehensionNode):
             iterable = self.evaluate(node.iterable_expr, context)

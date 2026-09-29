@@ -9,6 +9,7 @@ from .types import (
     ReferenceNode,
     ListComprehensionNode,
     SliceNode,
+    ListLiteralNode,
     EvalisNode,
 )
 
@@ -112,6 +113,16 @@ class AstBuilder(BaseEvalisVisitor):
             element_expr=self.visit(ctx.expr(0)),
             variable_name=ctx.identifier().getText(),
             iterable_expr=self.visit(ctx.expr(1)),
+        )
+
+    # Visit a parse tree produced by EvalisParser#ListLiteral.
+    def visitListLiteral(self, ctx):
+        expr_list = ctx.exprList()
+        if expr_list is None:
+            return ListLiteralNode(elements=())
+
+        return ListLiteralNode(
+            elements=tuple(self.visit(expr) for expr in expr_list.expr())
         )
 
     # Visit a parse tree produced by EvalisParser#AddSubExpr.

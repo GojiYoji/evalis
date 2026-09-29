@@ -58,6 +58,11 @@ class SliceNode:
     upper: Any | None
 
 
+@dataclass(frozen=True)
+class ListLiteralNode:
+    elements: tuple[Any, ...]
+
+
 EvalisNode = (
     ReferenceNode
     | UnaryOpNode  # noqa: W503
@@ -65,6 +70,7 @@ EvalisNode = (
     | LiteralNode  # noqa: W503
     | ListComprehensionNode  # noqa: W503
     | SliceNode  # noqa: W503
+    | ListLiteralNode  # noqa: W503
 )
 
 

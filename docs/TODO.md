@@ -85,9 +85,8 @@ This document outlines the roadmap, priorities, and future enhancements for Eval
 
 - [ ] **Null-coalescing operator** (`??`)
 - [ ] **Optional chaining** (`?.`)
-- [ ] **Object/array literals**
+- [ ] **Object literals**
   - `{key: value}` for objects
-  - `[1, 2, 3]` for arrays
 
 - [ ] **Regex support**
   - Pattern matching

@@ -7,6 +7,7 @@ import {
   LiteralNode,
   ListComprehensionNode,
   SliceNode,
+  ListLiteralNode,
   EvaluatorOptions,
 } from './types';
 import { EvalisError, CODE_TYPE_ERROR } from './error';
@@ -177,6 +178,13 @@ export class Evaluator {
       }
 
       return target.slice(lower ?? undefined, upper ?? undefined);
+    }
+
+    if (nodeType === 'listLiteral') {
+      const listNode = node as ListLiteralNode;
+      return listNode.elements.map((element) =>
+        this.evaluate(element, context)
+      );
     }
 
     if (nodeType === 'listComprehension') {
