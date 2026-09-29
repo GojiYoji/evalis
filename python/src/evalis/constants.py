@@ -3,8 +3,8 @@
 # - To change the __version__ in this file, use the `set_version` make target.
 
 # Version of package
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 
 # Evalis expression version that this package supports
-EXPRESSION_VERSION = "0.2.0"
+EXPRESSION_VERSION = "0.3.0"

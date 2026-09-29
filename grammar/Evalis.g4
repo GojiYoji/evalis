@@ -1,7 +1,7 @@
 // IMPORTANT! These comments are special and help generate code. If the grammar
 // changes, please also change these lines as needed.
 //
-// VERSION: 0.2.0
+// VERSION: 0.3.0
 // RESERVED_WORDS: not, and, or, null, true, false, in, for
 // BINARY_OPS: MULTIPLY *, DIVIDE /, ADD +, SUBTRACT -, LT <, LTE <=, GT >, GTE >=, EQUALS ==, NOT_EQUALS !=, AND and, OR or, IN in
 // UNARY_OPS: NOT not
