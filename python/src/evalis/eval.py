@@ -3,6 +3,7 @@ from evalis.ast import (
     BinaryOpType,
     LiteralNode,
     BinaryOpNode,
+    TernaryNode,
     ReferenceNode,
     UnaryOpNode,
     UnaryOpType,
@@ -118,6 +119,11 @@ class Evaluator:
                     return left in right
                 case _:
                     raise ValueError(f"Unexpected binary op found: {node.op}")
+        if isinstance(node, TernaryNode):
+            condition = self.evaluate(node.condition, context)
+            branch = node.if_true if condition else node.if_false
+            return self.evaluate(branch, context)
+
         if isinstance(node, UnaryOpNode):
             val = self.evaluate(node.expr, context)
 

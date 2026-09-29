@@ -59,6 +59,7 @@ Expression String
 - **Arithmetic**: `+`, `-`, `*`, `/`
 - **Comparison**: `==`, `!=`, `<`, `<=`, `>`, `>=`
 - **Logical**: `and`, `or`, `not`
+- **Ternary conditional**: `condition ? if_true : if_false`
 - **Property access**: `obj.property`, `obj['key']`
 - **Array access**: `arr[0]`
 - **Array slicing**: `arr[:10]`, `arr[2:5]`, `arr[8:]` (step syntax and negative indexes are not supported)

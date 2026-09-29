@@ -170,6 +170,15 @@ export class AstBuilder
     };
   }
 
+  visitTernaryExpr(ctx: Parser.TernaryExprContext): EvalisNode {
+    return {
+      type: 'ternary',
+      condition: this.visit(ctx.expr(0)),
+      ifTrue: this.visit(ctx.expr(1)),
+      ifFalse: this.visit(ctx.expr(2)),
+    };
+  }
+
   visitNumber(ctx: Parser.NumberContext): EvalisNode {
     const text = ctx.getText();
 
