@@ -46,6 +46,10 @@ This document outlines the roadmap, priorities, and future enhancements for Eval
 
 ### List Comprehensions
 
+- [ ] **Allow postfix access/slicing on comprehension results**
+  - Syntax: `[x for x in items][:10]`
+  - Generalize grammar from identifier-only suffixes to postfix suffixes on arbitrary atoms/expressions
+
 - [ ] **Flat mapping with multiple `for` clauses**
   - Syntax: `[x.name for group in groups for x in group.items]`
   - Flattens nested iterations into a single list

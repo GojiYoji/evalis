@@ -44,6 +44,7 @@ expr
 
 atom
     : literal                                       # LiteralAtom
+    | identifier accessSuffix* sliceSuffix          # SliceAtom
     | identifier accessSuffix*                      # IdentifierAtom
     | '(' expr ')'                                  # ParenAtom
     | '[' expr 'for' identifier 'in' expr ']'       # ListComprehension
@@ -52,6 +53,12 @@ atom
 accessSuffix
     : '.' identifier
     | '[' expr ']'
+    ;
+
+// TODO: Generalize suffix handling so slices can apply to any atom/expression,
+// e.g. `[x for x in items][:10]`. Today slices only apply to identifier chains.
+sliceSuffix
+    : '[' lower=expr? ':' upper=expr? ']'
     ;
 
 literal

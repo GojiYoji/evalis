@@ -32,12 +32,20 @@ export interface ListComprehensionNode {
   iterableExpr: EvalisNode;
 }
 
+export interface SliceNode {
+  type: 'slice';
+  target: EvalisNode;
+  lower: EvalisNode | null;
+  upper: EvalisNode | null;
+}
+
 export type EvalisNode =
   | ReferenceNode
   | UnaryOpNode
   | BinaryOpNode
   | LiteralNode
-  | ListComprehensionNode;
+  | ListComprehensionNode
+  | SliceNode;
 
 // region: other types -------------------------------------------------------
 export interface EvaluatorOptions {

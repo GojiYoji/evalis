@@ -8,6 +8,7 @@ from .types import (
     LiteralNode,
     ReferenceNode,
     ListComprehensionNode,
+    SliceNode,
     EvalisNode,
 )
 
@@ -78,8 +79,7 @@ class AstBuilder(BaseEvalisVisitor):
     def visitParenAtom(self, ctx):
         return self.visit(ctx.expr())
 
-    # Visit a parse tree produced by EvalisParser#IdentifierAtom.
-    def visitIdentifierAtom(self, ctx):
+    def _build_reference(self, ctx):
         base_identifier = ctx.identifier().getText()
         parts: list[EvalisNode] = []
 
@@ -92,6 +92,19 @@ class AstBuilder(BaseEvalisVisitor):
                 parts.append(self.visit(suffix.expr()))
 
         return ReferenceNode(root=base_identifier, children=tuple(parts))
+
+    # Visit a parse tree produced by EvalisParser#IdentifierAtom.
+    def visitIdentifierAtom(self, ctx):
+        return self._build_reference(ctx)
+
+    # Visit a parse tree produced by EvalisParser#SliceAtom.
+    def visitSliceAtom(self, ctx):
+        suffix = ctx.sliceSuffix()
+        return SliceNode(
+            target=self._build_reference(ctx),
+            lower=self.visit(suffix.lower) if suffix.lower else None,
+            upper=self.visit(suffix.upper) if suffix.upper else None,
+        )
 
     # Visit a parse tree produced by EvalisParser#ListComprehension.
     def visitListComprehension(self, ctx):

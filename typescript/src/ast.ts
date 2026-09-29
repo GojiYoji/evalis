@@ -81,7 +81,9 @@ export class AstBuilder
     return this.visit(ctx.expr());
   }
 
-  visitIdentifierAtom(ctx: Parser.IdentifierAtomContext): EvalisNode {
+  private buildReference(
+    ctx: Parser.IdentifierAtomContext | Parser.SliceAtomContext
+  ): EvalisNode {
     const baseIdentifier = ctx.identifier().getText();
     const parts: EvalisNode[] = [];
 
@@ -100,6 +102,21 @@ export class AstBuilder
       type: 'reference',
       root: baseIdentifier,
       children: parts,
+    };
+  }
+
+  visitIdentifierAtom(ctx: Parser.IdentifierAtomContext): EvalisNode {
+    return this.buildReference(ctx);
+  }
+
+  visitSliceAtom(ctx: Parser.SliceAtomContext): EvalisNode {
+    const suffix = ctx.sliceSuffix();
+
+    return {
+      type: 'slice',
+      target: this.buildReference(ctx),
+      lower: suffix._lower ? this.visit(suffix._lower) : null,
+      upper: suffix._upper ? this.visit(suffix._upper) : null,
     };
   }
 

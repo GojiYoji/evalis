@@ -34,9 +34,12 @@ console.log(value); // 7
 - **Logical**: `and`, `or`, `not`
 - **Property access**: `obj.property`, `obj['key']`
 - **Array access**: `arr[0]`
+- **Array slicing**: `arr[:10]`, `arr[2:5]`, `arr[8:]` (step syntax and negative indexes are not supported)
 - **List comprehensions**: `[x * 2 for x in numbers]`
 - **Membership**: `x in collection`
 - **String literals**: Both `'single'` and `"double"` quotes supported
+
+Array slicing currently applies to identifier/property/index chains, such as `items[:10]` or `user.items[2:5]`. Slicing arbitrary expression results, such as `[x for x in items][:10]`, is not yet supported.
 
 **Note on `+` operator:**
 - Numbers: `5 + 3` → `8`

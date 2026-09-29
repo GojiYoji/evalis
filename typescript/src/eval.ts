@@ -6,6 +6,7 @@ import {
   ReferenceNode,
   LiteralNode,
   ListComprehensionNode,
+  SliceNode,
   EvaluatorOptions,
 } from './types';
 import { EvalisError, CODE_TYPE_ERROR } from './error';
@@ -159,6 +160,25 @@ export class Evaluator {
       return current;
     }
 
+    if (nodeType === 'slice') {
+      const sliceNode = node as SliceNode;
+      const target = this.evaluate(sliceNode.target, context);
+      const lower = this.evaluateSliceBound(sliceNode.lower, context);
+      const upper = this.evaluateSliceBound(sliceNode.upper, context);
+
+      if (!Array.isArray(target)) {
+        if (this.options.shouldNullOnBadAccess) {
+          return null;
+        }
+        throw new EvalisError(
+          `Slice target must be a list, got ${typeof target}`,
+          CODE_TYPE_ERROR
+        );
+      }
+
+      return target.slice(lower ?? undefined, upper ?? undefined);
+    }
+
     if (nodeType === 'listComprehension') {
       const compNode = node as ListComprehensionNode;
       const iterable = this.evaluate(compNode.iterableExpr, context);
@@ -184,6 +204,28 @@ export class Evaluator {
     }
 
     throw new Error(`Unexpected node type found: ${nodeType}`);
+  }
+
+  private evaluateSliceBound(
+    bound: EvalisNode | null,
+    context: unknown
+  ): number | null {
+    if (bound === null) {
+      return null;
+    }
+
+    const value = this.evaluate(bound, context);
+    if (typeof value !== 'number' || !Number.isInteger(value)) {
+      throw new EvalisError(
+        `Slice bounds must be integers, got ${typeof value}`,
+        CODE_TYPE_ERROR
+      );
+    }
+    if (value < 0) {
+      throw new EvalisError('Slice bounds cannot be negative', CODE_TYPE_ERROR);
+    }
+
+    return value;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

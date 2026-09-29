@@ -51,8 +51,20 @@ class ListComprehensionNode:
     iterable_expr: Any
 
 
+@dataclass(frozen=True)
+class SliceNode:
+    target: Any
+    lower: Any | None
+    upper: Any | None
+
+
 EvalisNode = (
-    ReferenceNode | UnaryOpNode | BinaryOpNode | LiteralNode | ListComprehensionNode
+    ReferenceNode
+    | UnaryOpNode  # noqa: W503
+    | BinaryOpNode  # noqa: W503
+    | LiteralNode  # noqa: W503
+    | ListComprehensionNode  # noqa: W503
+    | SliceNode  # noqa: W503
 )
 
 

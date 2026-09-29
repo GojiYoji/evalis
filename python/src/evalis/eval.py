@@ -7,6 +7,7 @@ from evalis.ast import (
     UnaryOpNode,
     UnaryOpType,
     ListComprehensionNode,
+    SliceNode,
 )
 from evalis.error import EvalisError, CODE_TYPE_ERROR
 from evalis.types import EvaluatorOptions
@@ -133,6 +134,21 @@ class Evaluator:
 
             return current
 
+        if isinstance(node, SliceNode):
+            target = self.evaluate(node.target, context)
+            lower = self._evaluate_slice_bound(node.lower, context)
+            upper = self._evaluate_slice_bound(node.upper, context)
+
+            if not isinstance(target, list):
+                if self._options.should_null_on_bad_access:
+                    return None
+                raise EvalisError(
+                    f"Slice target must be a list, got {type(target).__name__}",
+                    CODE_TYPE_ERROR,
+                )
+
+            return target[lower:upper]
+
         if isinstance(node, ListComprehensionNode):
             iterable = self.evaluate(node.iterable_expr, context)
 
@@ -154,6 +170,21 @@ class Evaluator:
             return results
 
         raise ValueError(f"Unexpected node type found: {node}")
+
+    def _evaluate_slice_bound(self, bound: Any | None, context: Any) -> int | None:
+        if bound is None:
+            return None
+
+        value = self.evaluate(bound, context)
+        if not isinstance(value, int):
+            raise EvalisError(
+                f"Slice bounds must be integers, got {type(value).__name__}",
+                CODE_TYPE_ERROR,
+            )
+        if value < 0:
+            raise EvalisError("Slice bounds cannot be negative", CODE_TYPE_ERROR)
+
+        return value
 
     def _lookup_reference(self, context: Any, key: Any) -> Any:
         try:
